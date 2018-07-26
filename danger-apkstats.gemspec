@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Apkstats::VERSION
   spec.authors       = ['Jumpei Matsuda']
   spec.email         = ['jmatsu.drm@gmail.com']
-  spec.description   = %q{A short description of danger-apkstats.}
-  spec.summary       = %q{A longer description of danger-apkstats.}
+  spec.description   = %q{To inpsect android application file with danger.}
+  spec.summary       = %q{This is a danger plugin to inspect android application file.}
   spec.homepage      = 'https://github.com/jmatsu/danger-apkstats'
   spec.license       = 'MIT'
 
