@@ -6,8 +6,7 @@ module Danger::Apkstats
       out, err = run_command('apk', 'compare', '--different-only', apk_filepath, other_apk_filepath)
 
       if out
-        left, right, diff, = out.partition("\n").first.split("\s")
-        return "Apk file size was changed by #{diff} : from #{right} to #{left}", nil
+        return out.partition("\n").first, nil
       else
         return nil, err
       end
@@ -24,7 +23,6 @@ module Danger::Apkstats
     private
 
     def run_command(*args)
-      puts "#{command} #{args.join(' ')}"
       out, err, status = Open3.capture3("#{command} #{args.join(' ')}")
       return out, nil if status == 0
       return nil, (err || 'failed due while executing a command')
