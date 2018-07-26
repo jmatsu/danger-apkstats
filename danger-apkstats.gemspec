@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['jmatsu.drm@gmail.com']
   spec.description   = %q{A short description of danger-apkstats.}
   spec.summary       = %q{A longer description of danger-apkstats.}
-  spec.homepage      = 'https://github.com/Jumpei Matsuda/danger-apkstats'
+  spec.homepage      = 'https://github.com/jmatsu/danger-apkstats'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)

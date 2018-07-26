@@ -17,8 +17,11 @@ module Danger
   # @tags android, apk_stats
   #
   class DangerApkstats < Plugin
+    require_relative 'command/executable_command'
+    require_relative 'command/apk_analyzer'
+
     COMMAND_TYPE_MAP = {
-      apk_analyzer: Danger::ApkStats::ApkAnalyzer,
+      apk_analyzer: Danger::Apkstats::ApkAnalyzer,
     }.freeze
 
     private_constant(:COMMAND_TYPE_MAP)
@@ -33,74 +36,36 @@ module Danger
     # @return [String]
     attr_accessor :apk_filepath
 
-    # A flag to report results
-    #
-    # @return [Boolean]
-    attr_accessor :report
-
-    # A flag to be strict
-    #
-    # @return [Boolean]
-    attr_accessor :strict
-
     # TODO multiple apks
 
     def compare_with(other_apk_filepath, opts={})
-      raise 'apks must be specified' if apk_filepath.blank?
+      raise 'apks must be specified' if apk_filepath.nil? || apk_filepath.empty?
 
       out, err = command.compare_with(apk_filepath, other_apk_filepath)
 
-      if report
-        report(out, err)
-      else
-        echo(out, err)
-      end
+      message(out) if out
+      warn(err) if err
+      !err
     end
 
     def filesize(opts={})
-      raise 'apks must be specified' if apk_filepath.blank?
+      raise 'apks must be specified' if apk_filepath.nil? || apk_filepath.empty?
 
-      message, err = command.filesize(apk_filepath)
-
-      if report
-        report(out, err)
-      else
-        echo(out, err)
-      end
+      out, = command.filesize(apk_filepath)
+      out
     end
 
     def downloadsize(opts={})
-      raise 'apks must be specified' if apk_filepath.blank?
+      raise 'apks must be specified' if apk_filepath.nil? || apk_filepath.empty?
 
-      message, err = command.downloadsize(apk_filepath)
-
-      if report
-        report(out, err)
-      else
-        echo(out, err)
-      end
+      out, = command.downloadsize(apk_filepath)
+      out
     end
 
     private
 
     def command
-      @command ||= COMMAND_TYPE_MAP[command_type.to_sym]
-    end
-
-    def report(out, err)
-      if err
-        strict ? fail(err) : warn(err)
-      else
-        message(out)
-      end
-    end
-
-    def echo(out, err)
-      if err
-        STDERR.puts(err)
-      else
-        puts(out)
-      end
+      @command ||= COMMAND_TYPE_MAP[command_type.to_sym].new
     end
   end
 end
