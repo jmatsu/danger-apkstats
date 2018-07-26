@@ -11,6 +11,16 @@ A description of danger-apkstats.
     Methods and attributes from this plugin are available in
     your `Dangerfile` under the `apkstats` namespace.
 
+# Sample
+
+```
+apkstats.command_type=:apk_analyzer # required
+apkstats.apk_filepath='app-debug.apk' # required
+apkstats.compare_with('app-other.apk', do_report: true)
+apkstats.filesize
+apkstats.downloadsize
+```
+
 ## Development
 
 1. Clone this repo
