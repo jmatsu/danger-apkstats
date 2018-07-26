@@ -29,7 +29,7 @@ module Danger::Apkstats
     end
 
     def command
-      @command ||= "#{ENV.fetch('ANDROID_SDK_HOME')}/tools/bin/apkanalyzer"
+      @command ||= "#{ENV.fetch('ANDROID_HOME')}/tools/bin/apkanalyzer"
     end
   end
 end
