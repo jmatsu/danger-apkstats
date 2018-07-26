@@ -3,3 +3,4 @@ pkg
 .idea/
 .yardoc
 **/vendor/bundle/
+*.gem
