@@ -33,18 +33,25 @@ module Danger
     # @return [String]
     attr_accessor :apk_filepath
 
+    # A flag to report results
+    #
+    # @return [Boolean]
+    attr_accessor :report
+
+    # A flag to be strict
+    #
+    # @return [Boolean]
+    attr_accessor :strict
+
     # TODO multiple apks
 
     def compare_with(other_apk_filepath, opts={})
       raise 'apks must be specified' if apk_filepath.blank?
 
-      strict_mode = opts[:strict] || false
-      should_report = opts[:report] || false
-
       out, err = command.compare_with(apk_filepath, other_apk_filepath)
 
-      if should_report
-        report(out, err, strict_mode)
+      if report
+        report(out, err)
       else
         echo(out, err)
       end
@@ -53,13 +60,10 @@ module Danger
     def filesize(opts={})
       raise 'apks must be specified' if apk_filepath.blank?
 
-      strict_mode = opts[:strict] || false
-      should_report = opts[:report] || false
-
       message, err = command.filesize(apk_filepath)
 
-      if should_report
-        report(out, err, strict_mode)
+      if report
+        report(out, err)
       else
         echo(out, err)
       end
@@ -68,13 +72,10 @@ module Danger
     def downloadsize(opts={})
       raise 'apks must be specified' if apk_filepath.blank?
 
-      strict_mode = opts[:strict] || false
-      should_report = opts[:report] || false
-
       message, err = command.downloadsize(apk_filepath)
 
-      if should_report
-        report(out, err, strict_mode)
+      if report
+        report(out, err)
       else
         echo(out, err)
       end
@@ -86,9 +87,9 @@ module Danger
       @command ||= COMMAND_TYPE_MAP[command_type.to_sym]
     end
 
-    def report(out, err, strict_mode)
+    def report(out, err)
       if err
-        strict_mode ? fail(err) : warn(err)
+        strict ? fail(err) : warn(err)
       else
         message(out)
       end

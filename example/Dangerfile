@@ -1,0 +1,3 @@
+apkstats.apk_filepath=app-debug.apk
+apkstats.report=false
+apkstats.compare_with('app-other.apk')
