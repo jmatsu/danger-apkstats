@@ -6,7 +6,7 @@ module Danger::Apkstats
       out, err = run_command('apk', 'compare', '--different-only', apk_filepath, other_apk_filepath)
 
       if out
-        return out.partition("\n").first, nil
+        return out.partition("\n").first.strip, nil
       else
         return nil, err
       end
