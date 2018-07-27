@@ -44,9 +44,11 @@ module Danger
       out, err = command.compare_with(apk_filepath, other_apk_filepath)
 
       if opts[:do_report]
-        if out
+        if out&.empty?
+          message("Apk file size was not changed")
+        elsif out
           left, right, diff, = out.split("\s")
-          message("Apk file size was changed by #{diff} : from #{right} to #{left}")
+          message("Apk file size was changed by #{diff} : from #{left} to #{right}")
         else
           warn(err)
         end
