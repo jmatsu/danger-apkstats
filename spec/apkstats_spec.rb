@@ -1,4 +1,4 @@
-require File.expand_path("../spec_helper", __FILE__)
+require File.expand_path("spec_helper", __dir__)
 
 module Danger
   describe Danger::DangerApkstats do
@@ -16,7 +16,7 @@ module Danger
 
         # mock the PR data
         # you can then use this, eg. github.pr_author, later in the spec
-        json = File.read(File.dirname(__FILE__) + '/support/fixtures/github_pr.json') # example json: `curl https://api.github.com/repos/danger/danger-plugin-template/pulls/18 > github_pr.json`
+        json = File.read(File.dirname(__FILE__) + "/support/fixtures/github_pr.json") # example json: `curl https://api.github.com/repos/danger/danger-plugin-template/pulls/18 > github_pr.json`
         allow(@my_plugin.github).to receive(:pr_json).and_return(json)
       end
 
@@ -40,7 +40,6 @@ module Danger
 
         expect(@dangerfile.status_report[:warnings]).to eq([])
       end
-
     end
   end
 end

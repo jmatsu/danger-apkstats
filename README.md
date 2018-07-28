@@ -15,10 +15,15 @@ A description of danger-apkstats.
 
 ```
 apkstats.command_type=:apk_analyzer # required
-apkstats.apk_filepath='app-debug.apk' # required
+apkstats.apk_filepath='app-debug.apk' # required. It would be a base apk.
 apkstats.compare_with('app-other.apk', do_report: true)
-apkstats.filesize
-apkstats.downloadsize
+apkstats.file_size #=> Integer
+apkstats.download_size #=> Integer
+apkstats.required_features #=> Array<String>
+apkstats.non_required_features #=> Array<String>
+apkstats.permissions #=> Array<String>
+apkstats.min_sdk #=> String
+apkstats.target_sdk #=> String
 ```
 
 ## Development

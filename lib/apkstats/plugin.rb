@@ -1,80 +1,176 @@
+require_relative "helper/bytes"
+
+require_relative "entity/apk_info"
+require_relative "entity/apk_info_diff"
+require_relative "entity/feature"
+require_relative "entity/permission"
+
+require_relative "command/executable"
+require_relative "command/apk_analyzer"
+
 module Danger
-  # This is your plugin class. Any attributes or methods you expose here will
-  # be available from within your Dangerfile.
-  #
-  # To be published on the Danger plugins site, you will need to have
-  # the public interface documented. Danger uses [YARD](http://yardoc.org/)
-  # for generating documentation from your plugin source, and you can verify
-  # by running `danger plugins lint` or `bundle exec rake spec`.
-  #
-  # You should replace these comments with a public description of your library.
-  #
   # @example Ensure people are well warned about merging on Mondays
   #
-  #          my_plugin.warn_on_mondays
+  #          apkstats.compare_with(<apk_filepath>)
   #
   # @see  Jumpei Matsuda/danger-apkstats
   # @tags android, apk_stats
   #
   class DangerApkstats < Plugin
-    require_relative 'command/executable_command'
-    require_relative 'command/apk_analyzer'
-
     COMMAND_TYPE_MAP = {
-      apk_analyzer: Danger::Apkstats::ApkAnalyzer,
+      apk_analyzer: Apkstats::Command::ApkAnalyzer,
     }.freeze
 
     private_constant(:COMMAND_TYPE_MAP)
 
-    # A command type to be run
-    #
-    # @return [Symbol, String] either of array( apk_analyzer )
+    # A command type to be run.
+    # One of keys of COMMAND_TYPE_MAP
     attr_accessor :command_type
 
-    # An apk file to be operated
+    # A custom command path
+    attr_accessor :command_path
+
+    # A target apk file.
     #
     # @return [String]
     attr_accessor :apk_filepath
 
-    # TODO multiple apks
+    # rubocop:disable Metrics/AbcSize
 
-    def compare_with(other_apk_filepath, opts={})
-      raise 'apks must be specified' if apk_filepath.nil? || apk_filepath.empty?
+    def compare_with(other_apk_filepath, do_report: true)
+      raise "apk filepaths must be specified" if apk_filepath.nil? || apk_filepath.empty?
 
-      out, err = command.compare_with(apk_filepath, other_apk_filepath)
+      base_apk = Apkstats::Entity::ApkInfo.new(command, apk_filepath)
+      other_apk = Apkstats::Entity::ApkInfo.new(command, other_apk_filepath)
 
-      if opts[:do_report]
-        if out&.empty?
-          message("Apk file size was not changed")
-        elsif out
-          left, right, diff, = out.split("\s")
-          message("Apk file size was changed by #{diff} : from #{left} to #{right}")
-        else
-          warn(err)
+      return {
+          base: base_apk.to_h,
+          other: base_apk.to_h,
+          diff: Apkstats::Entity::ApkInfoDiff.new(base_apk, other_apk).to_h,
+      }.tap do |result|
+        break unless do_report
+
+        diff = result[:diff]
+
+        md = "### Apk comparision results" << "\n\n"
+        md << "Property | Summary" << "\n"
+        md << ":--- | :---" << "\n"
+
+        diff[:min_sdk].tap do |min_sdk|
+          break if min_sdk.size == 1
+
+          md << "Min SDK Change | Before #{min_sdk[1]} / After #{min_sdk[0]}" << "\n"
         end
+
+        diff[:target_sdk].tap do |target_sdk|
+          break if target_sdk.size == 1
+
+          md << "Target SDK Change | Before #{target_sdk[1]} / After #{target_sdk[0]}" << "\n"
+        end
+
+        result[:base][:file_size].tap do |file_size|
+          size = Apkstats::Helper::Bytes.from_b(file_size)
+
+          md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB " << "\n"
+        end
+
+        diff[:file_size].tap do |file_size|
+          size = Apkstats::Helper::Bytes.from_b(file_size)
+
+          md << "File Size Change | #{size.to_b(show_plus: true)} Bytes. (#{size.to_kb} KB) " << "\n"
+        end
+
+        diff[:download_size].tap do |download_size|
+          size = Apkstats::Helper::Bytes.from_b(download_size)
+
+          md << "Download Size Change | #{size.to_b(show_plus: true)} Bytes. (#{size.to_kb} KB) " << "\n"
+        end
+
+        report_hash_and_arrays = lambda { |key, name|
+          list_up_entities = lambda { |type_key, label|
+            diff[key][type_key].tap do |features|
+              break if features.empty?
+
+              md << "#{label} | " << features.map { |f| "- #{f}" }.join("<br>").to_s << "\n"
+            end
+          }
+
+          list_up_entities.call(:new, "New #{name}")
+          list_up_entities.call(:removed, "Removed #{name}")
+        }
+
+        report_hash_and_arrays.call(:required_features, "Required Features")
+        report_hash_and_arrays.call(:non_required_features, "Non-required Features")
+        report_hash_and_arrays.call(:permissions, "Permissions")
+
+
+        markdown(md)
       end
+    rescue StandardError => e
+      warn("apkstats failed to execute the command due to #{e.message}")
 
-      return out, err
+      e.backtrace && e.backtrace.each { |line| puts line }
     end
 
-    def filesize(opts={})
-      raise 'apks must be specified' if apk_filepath.nil? || apk_filepath.empty?
+    # rubocop:enable Metrics/AbcSize
 
-      out, = command.filesize(apk_filepath)
-      out
+    def file_size(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_i : -1
     end
 
-    def downloadsize(opts={})
-      raise 'apks must be specified' if apk_filepath.nil? || apk_filepath.empty?
+    def download_size(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_i : -1
+    end
 
-      out, = command.downloadsize(apk_filepath)
-      out
+    def required_features(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_a : nil
+    end
+
+    def non_required_features(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_a : nil
+    end
+
+    def permissions(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_a : nil
+    end
+
+    def min_sdk(_opts = {})
+      run_command(__method__)
+    end
+
+    def target_sdk(_opts = {})
+      run_command(__method__)
     end
 
     private
 
+    def up_byte_unit(size)
+      (size.to_i / (2**10).to_f).round(2)
+    end
+
+    def show_op(size)
+      size < 0 ? size : "+#{size}"
+    end
+
+    def run_command(name)
+      raise "#{command.command_path} is not found" unless command.exist?
+
+      return command.send(name, apk_filepath)
+    rescue StandardError => e
+      warn("apkstats failed to execute the command #{name} due to #{e.message}")
+
+      e.backtrace && e.backtrace.each { |line| puts line }
+
+      nil
+    end
+
     def command
-      @command ||= COMMAND_TYPE_MAP[command_type.to_sym].new
+      @command ||= COMMAND_TYPE_MAP[command_type.to_sym].new(command_path: command_path)
     end
   end
 end

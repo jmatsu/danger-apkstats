@@ -3,7 +3,11 @@
 # If you don't like these settings, just delete this file :)
 
 AllCops:
-  TargetRubyVersion: 2.0
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+    - 'tmp/**/*'
+  TargetRubyVersion: 2.2
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
@@ -149,4 +153,13 @@ PercentLiteralDelimiters:
     "%x": ()
 
 Security/YAMLLoad:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: true
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
   Enabled: false
