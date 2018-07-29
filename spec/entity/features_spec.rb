@@ -11,14 +11,14 @@ module Apkstats::Entity
     let(:feature3) { create_feature("feature3", impiled_reason: "due to tests") }
 
     context "-" do
-      it "should remove elements by name" do
+      it "should remove elements by name and not_required" do
         one_two_three = Features.new([feature1, feature2, feature3])
         one_two = Features.new([feature1, feature2])
 
         expect((one_two_three - one_two).values).to contain_exactly(feature3)
 
         new_feature2 = create_feature(feature2.name, not_required: !feature2.not_required?)
-        expect((one_two - Features.new([new_feature2])).values).to contain_exactly(feature1)
+        expect((one_two - Features.new([new_feature2])).values).to contain_exactly(feature1, feature2)
 
         new_feature3 = create_feature(feature3.name, impiled_reason: nil)
         expect((one_two_three - Features.new([new_feature3])).values).to contain_exactly(feature1, feature2)

@@ -13,7 +13,8 @@ module Apkstats::Entity
     end
 
     def not_required?
-      @not_required
+      # cast to Boolean
+      @not_required == true
     end
 
     def impiled?
@@ -62,11 +63,11 @@ module Apkstats::Entity
     def -(other)
       raise "#{self.class} cannot handle #{other.class} with the minus operator" unless other.class == Features
 
-      self_name_hash = Features.name_hash(self)
-      other_name_hash = Features.name_hash(other)
+      self_hash = Features.hashnize(self)
+      other_hash = Features.hashnize(other)
 
-      diff_features = (self_name_hash.keys - other_name_hash.keys).map do |key|
-        self_name_hash[key]
+      diff_features = (self_hash.keys - other_hash.keys).map do |key|
+        self_hash[key]
       end
 
       Features.new(diff_features)
@@ -85,9 +86,9 @@ module Apkstats::Entity
       other.hash
     end
 
-    def self.name_hash(features)
+    def self.hashnize(features)
       features.values.each_with_object({}) do |feature, acc|
-        acc[feature.name] = feature
+        acc[[feature.name, feature.not_required?]] = feature
       end
     end
   end
