@@ -31,7 +31,7 @@ module Apkstats::Entity
 
     def to_h
       KEYS.each_with_object({}) do |key, acc|
-        acc[key] = self.send(key)
+        acc[key] = self[key]
       end
     end
   end

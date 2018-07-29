@@ -6,7 +6,7 @@ module Apkstats::Entity
     # String?
     attr_reader :max_sdk
 
-    def initialize(name, max_sdk)
+    def initialize(name, max_sdk = nil)
       @name = name
       @max_sdk = max_sdk
     end
