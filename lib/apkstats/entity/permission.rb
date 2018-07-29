@@ -18,6 +18,23 @@ module Apkstats::Entity
         name
       end
     end
+
+    def eql?(other)
+      return if !other || other.class == Permission
+      other.name == name &&
+        other.max_sdk == max_sdk
+    end
+
+    def hash
+      h = name.hash
+
+      if max_sdk
+        h *= 31
+        h += max_sdk.hash
+      end
+
+      h
+    end
   end
 
   class Permissions
@@ -31,11 +48,11 @@ module Apkstats::Entity
     def -(other)
       raise "#{self.class} cannot handle #{other.class} with the minus operator" unless other.class == Permissions
 
-      self_name_hash = Permissions.name_hash(self)
-      other_name_hash = Permissions.name_hash(other)
+      self_hash = Permissions.hashnize(self)
+      other_hash = Permissions.hashnize(other)
 
-      diff_permissions = (self_name_hash.keys - other_name_hash.keys).map do |key|
-        self_name_hash[key]
+      diff_permissions = (self_hash.keys - other_hash.keys).map do |key|
+        self_hash[key]
       end
 
       Permissions.new(diff_permissions)
@@ -45,9 +62,18 @@ module Apkstats::Entity
       values.map(&:to_s)
     end
 
-    def self.name_hash(permissions)
+    def eql?(other)
+      return if !other || other.class == Permissions
+      other.values == values
+    end
+
+    def hash
+      other.hash
+    end
+
+    def self.hashnize(permissions)
       permissions.values.each_with_object({}) do |permission, acc|
-        acc[permission.name] = permission
+        acc[[permission.name, permission.max_sdk]] = permission
       end
     end
   end

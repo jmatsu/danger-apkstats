@@ -6,18 +6,18 @@ module Apkstats::Entity
       {
           file_size: 100,
           download_size: 150,
-          required_features: [
-              Features.new([Feature.new("feature1")]),
-              Features.new([Feature.new("feature2")])
-          ],
-          non_required_features: [
-              Features.new([Feature.new("feature3", not_required: true)]),
-                            Features.new([Feature.new("feature4", not_required: true)])
-          ],
-          permissions: [
-              Permissions.new([Permission.new("permission1")]),
-              Permissions.new([Permission.new("permission2", "23")]),
-          ],
+          required_features: Features.new([
+                                            Feature.new("feature1"),
+                                            Feature.new("feature2"),
+                                          ]),
+          non_required_features: Features.new([
+                                                Feature.new("feature3", not_required: true),
+                                                Feature.new("feature4", not_required: true),
+                                              ]),
+          permissions: Permissions.new([
+                                         Permission.new("permission1"),
+                                         Permission.new("permission2", "23"),
+                                       ]),
           min_sdk: "16",
           target_sdk: "26",
       }

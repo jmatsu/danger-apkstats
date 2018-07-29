@@ -10,14 +10,14 @@ module Apkstats::Entity
     let(:permission2) { create_permission("permission2", max_sdk: "24") }
 
     context "-" do
-      it "should remove elements by name" do
+      it "should remove elements by name and max_sdk" do
         one = Permissions.new([permission1])
         one_two = Permissions.new([permission1, permission2])
 
         expect((one_two - one).values).to contain_exactly(permission2)
 
         new_permission2 = create_permission(permission2.name, max_sdk: "12")
-        expect((one_two - Permissions.new([new_permission2])).values).to contain_exactly(permission1)
+        expect((one_two - Permissions.new([new_permission2])).values).to contain_exactly(permission1, permission2)
       end
     end
 

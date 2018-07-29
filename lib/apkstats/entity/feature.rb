@@ -29,6 +29,26 @@ module Apkstats::Entity
         name
       end
     end
+
+    def eql?(other)
+      return if !other || other.class == Feature
+      other.name == name &&
+        other.not_required? == not_required? &&
+        other.impiled_reason == impiled_reason
+    end
+
+    def hash
+      h = not_required? ? 1 : 0
+      h *= 31
+      h += name.hash
+
+      if impiled_reason
+        h *= 31
+        h += impiled_reason.hash
+      end
+
+      h
+    end
   end
 
   class Features
@@ -54,6 +74,15 @@ module Apkstats::Entity
 
     def to_a
       values.map(&:to_s)
+    end
+
+    def eql?(other)
+      return if !other || other.class == Features
+      other.values == values
+    end
+
+    def hash
+      other.hash
     end
 
     def self.name_hash(features)
