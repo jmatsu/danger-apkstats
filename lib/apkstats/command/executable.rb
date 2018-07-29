@@ -4,8 +4,8 @@ module Apkstats::Command
 
     attr_reader :command_path
 
-    def exist?
-      File.exist?(command_path)
+    def executable?
+      File.executable?(command_path)
     end
 
     # Compare two apk files and return results.

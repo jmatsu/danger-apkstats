@@ -157,7 +157,7 @@ module Danger
     end
 
     def run_command(name)
-      raise "#{command.command_path} is not found" unless command.exist?
+      raise "#{command.command_path} is not found or is not executable" unless command.executable?
 
       return command.send(name, apk_filepath)
     rescue StandardError => e
