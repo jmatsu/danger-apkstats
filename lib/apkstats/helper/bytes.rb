@@ -6,12 +6,12 @@ module Apkstats::Helper
       Byte.new(byte)
     end
 
-    def self.from_kb(kb)
-      Byte.new(down_unit(kb))
+    def self.from_kb(k_byte)
+      Byte.new(down_unit(k_byte))
     end
 
-    def self.from_mb(mb)
-      Byte.new(down_unit(down_unit(mb)))
+    def self.from_mb(m_byte)
+      Byte.new(down_unit(down_unit(m_byte)))
     end
 
     def self.up_unit(size)
@@ -29,22 +29,34 @@ module Apkstats::Helper
         @value = value
       end
 
-      def to_b(show_plus: false)
-        handle_plus(value, show_plus)
+      def to_b
+        value
       end
 
-      def to_kb(show_plus: false)
-        handle_plus(Bytes.up_unit(value), show_plus)
+      def to_kb
+        Bytes.up_unit(value)
       end
 
-      def to_mb(show_plus: false)
-        handle_plus(Bytes.up_unit(to_kb), show_plus)
+      def to_mb
+        Bytes.up_unit(to_kb)
+      end
+
+      def to_s_b
+        add_op(to_b)
+      end
+
+      def to_s_kb
+        add_op(to_kb)
+      end
+
+      def to_s_mb
+        add_op(to_mb)
       end
 
       private
 
-      def handle_plus(size, show_plus)
-        !show_plus || size < 0 ? size : "+#{size}"
+      def add_op(size)
+        size < 0 ? size.to_s : "+#{size}"
       end
     end
   end

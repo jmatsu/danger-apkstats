@@ -77,13 +77,13 @@ module Danger
         diff[:file_size].tap do |file_size|
           size = Apkstats::Helper::Bytes.from_b(file_size)
 
-          md << "File Size Change | #{size.to_b(show_plus: true)} Bytes. (#{size.to_kb} KB) " << "\n"
+          md << "File Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
         end
 
         diff[:download_size].tap do |download_size|
           size = Apkstats::Helper::Bytes.from_b(download_size)
 
-          md << "Download Size Change | #{size.to_b(show_plus: true)} Bytes. (#{size.to_kb} KB) " << "\n"
+          md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
         end
 
         report_hash_and_arrays = lambda { |key, name|
@@ -102,7 +102,6 @@ module Danger
         report_hash_and_arrays.call(:required_features, "Required Features")
         report_hash_and_arrays.call(:non_required_features, "Non-required Features")
         report_hash_and_arrays.call(:permissions, "Permissions")
-
 
         markdown(md)
       end
