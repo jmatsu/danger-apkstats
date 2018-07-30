@@ -101,8 +101,8 @@ module Apkstats::Entity
                                    create_permission("permission2"),
                                  ]).to_a
       )
-      expect(diff.min_sdk).to eq(["16", "21"])
-      expect(diff.target_sdk).to eq(["26", "27"])
+      expect(diff.min_sdk).to eq(%w(16 21))
+      expect(diff.target_sdk).to eq(%w(26 27))
     end
   end
 end
