@@ -9,9 +9,45 @@ require_relative "command/executable"
 require_relative "command/apk_analyzer"
 
 module Danger
-  # @example Ensure people are well warned about merging on Mondays
+  # Show stats of your apk file.
+  # By default, it's done using apkanalyzer in android sdk.
   #
-  #          apkstats.compare_with(<apk_filepath>)
+  # All command need your apk filepath like below
+  #
+  #         apkstats.apk_filepath=<your new apk filepath>
+  #
+  # @example Compare two apk files and print it.
+  #
+  #         apkstats.compare_with(<your old apk filepath>, do_report: true) # report it in markdown table
+  #         apkstats.compare_with(<your old apk filepath>, do_report: false) # just return results
+  #
+  # @example Show the file size of your apk file.
+  #
+  #         apkstats.file_size
+  #
+  # @example Show the download size of your apk file.
+  #
+  #         apkstats.download_size
+  #
+  # @example Show all required features of your apk file.
+  #
+  #         apkstats.required_features
+  #
+  # @example Show all non-required features of your apk file.
+  #
+  #         apkstats.non_required_features
+  #
+  # @example Show all requested permissions of your apk file.
+  #
+  #         apkstats.permissions
+  #
+  # @example Show the min sdk version of your apk file.
+  #
+  #         apkstats.min_sdk
+  #
+  # @example Show the target sdk version of your apk file.
+  #
+  #         apkstats.target_sdk
   #
   # @see  Jumpei Matsuda/danger-apkstats
   # @tags android, apk_stats
@@ -23,20 +59,32 @@ module Danger
 
     private_constant(:COMMAND_TYPE_MAP)
 
+    # *Optional*
     # A command type to be run.
     # One of keys of COMMAND_TYPE_MAP
+    #
+    # @return [Symbol, Nil] _
     attr_accessor :command_type
 
+    # *Optional*
     # A custom command path
+    #
+    # @return [Symbol, Nil] _
     attr_accessor :command_path
 
-    # A target apk file.
+    # *Required*
+    # Your target apk filepath.
     #
     # @return [String]
     attr_accessor :apk_filepath
 
     # rubocop:disable Metrics/AbcSize
 
+    # Get stats of two apk files and calculate diffs between them.
+    #
+    # @param [String] other_apk_filepath your old apk
+    # @param [Boolean] do_report report markdown table if true, otherwise just return results
+    # @return [Hash] see command/executable#compare_with for more detail
     def compare_with(other_apk_filepath, do_report: true)
       raise "apk filepaths must be specified" if apk_filepath.nil? || apk_filepath.empty?
 
@@ -113,35 +161,58 @@ module Danger
 
     # rubocop:enable Metrics/AbcSize
 
+    # Show the file size of your apk file.
+    #
+    # @return [Fixnum] return positive value if exists, otherwise -1.
     def file_size(_opts = {})
       result = run_command(__method__)
       result ? result.to_i : -1
     end
 
+    # Show the download size of your apk file.
+    #
+    # @return [Fixnum] return positive value if exists, otherwise -1.
     def download_size(_opts = {})
       result = run_command(__method__)
       result ? result.to_i : -1
     end
 
+    # Show all required features of your apk file.
+    # The result doesn't contain non-required features.
+    #
+    # @return [Array<String>, Nil] return nil unless retrieved.
     def required_features(_opts = {})
       result = run_command(__method__)
       result ? result.to_a : nil
     end
 
+    # Show all non-required features of your apk file.
+    # The result doesn't contain required features.
+    #
+    # @return [Array<String>, Nil] return nil unless retrieved.
     def non_required_features(_opts = {})
       result = run_command(__method__)
       result ? result.to_a : nil
     end
 
+    # Show all permissions of your apk file.
+    #
+    # @return [Array<String>, Nil] return nil unless retrieved.
     def permissions(_opts = {})
       result = run_command(__method__)
       result ? result.to_a : nil
     end
 
+    # Show the min sdk version of your apk file.
+    #
+    # @return [String, Nil] return nil unless retrieved.
     def min_sdk(_opts = {})
       run_command(__method__)
     end
 
+    # Show the target sdk version of your apk file.
+    #
+    # @return [String, Nil] return nil unless retrieved.
     def target_sdk(_opts = {})
       run_command(__method__)
     end
