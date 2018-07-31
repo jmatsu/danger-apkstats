@@ -13,10 +13,10 @@ script:
   - |
     version='4333796'
 
-    if [ $(cat sdk/.sdk_tools_version || echo) != $version ]; then
+    if [ "$(cat sdk/.sdk_tools_version || echo)" != "$version" ]; then
       rm -fr sdk || :
       mkdir sdk
       curl -o sdk-tools-linux.zip "https://dl.google.com/android/repository/sdk-tools-linux-$version.zip"
       unzip "sdk-tools-linux.zip" -d sdk
     fi
-  - ANDROID_HOME="$HOME/sdk" bundle exec rake spec
+  - ANDROID_HOME="$PWD/sdk" bundle exec rake spec
