@@ -3,8 +3,8 @@ ROOT = Pathname.new(File.expand_path("..", __dir__))
 $:.unshift((ROOT + "lib").to_s)
 $:.unshift((ROOT + "spec").to_s)
 
-def get_fixture_path
-  "#{(ROOT + "spec" + "fixture")}/"
+def fixture_path
+  "#{(ROOT + 'spec' + 'fixture')}/"
 end
 
 require "bundler/setup"

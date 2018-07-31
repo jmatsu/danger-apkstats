@@ -2,12 +2,12 @@ require_relative "../spec_helper"
 
 module Apkstats::Command
   describe Apkstats::Command::ApkAnalyzer do
-    let(:apk_base) { get_fixture_path + "app-base.apk" }
-    let(:apk_other1) { get_fixture_path + "app-other1.apk" }
-    let(:apk_other2) { get_fixture_path + "app-other2.apk" }
-    let(:apk_other3) { get_fixture_path + "app-other3.apk" }
-    let(:apk_other4) { get_fixture_path + "app-other4.apk" }
-    let(:apk_other5) { get_fixture_path + "app-other5.apk" }
+    let(:apk_base) { fixture_path + "app-base.apk" }
+    let(:apk_other1) { fixture_path + "app-other1.apk" }
+    let(:apk_other2) { fixture_path + "app-other2.apk" }
+    let(:apk_other3) { fixture_path + "app-other3.apk" }
+    let(:apk_other4) { fixture_path + "app-other4.apk" }
+    let(:apk_other5) { fixture_path + "app-other5.apk" }
 
     it "should use custom path if set" do
       expect(ApkAnalyzer.new({}).command_path).to eq("#{ENV.fetch('ANDROID_HOME')}/tools/bin/apkanalyzer")
@@ -58,13 +58,13 @@ module Apkstats::Command
     context "to_permission" do
       it "should return a permission without max_sdk" do
         expect(
-            ApkAnalyzer.to_permission("android.permission.INTERNET")
+          ApkAnalyzer.to_permission("android.permission.INTERNET")
         ).to eq(::Apkstats::Entity::Permission.new("android.permission.INTERNET", max_sdk: nil))
       end
 
       it "should return a permission with max_sdk" do
         expect(
-            ApkAnalyzer.to_permission("android.permission.INTERNET' maxSdkVersion='23")
+          ApkAnalyzer.to_permission("android.permission.INTERNET' maxSdkVersion='23")
         ).to eq(::Apkstats::Entity::Permission.new("android.permission.INTERNET", max_sdk: "23"))
       end
     end
@@ -77,50 +77,50 @@ module Apkstats::Command
         ].join("\n")
 
         expect(ApkAnalyzer.parse_permissions(command_output)).to contain_exactly(
-                                                                 ::Apkstats::Entity::Permission.new("android.permission.INTERNET", max_sdk: nil),
-                                                                 ::Apkstats::Entity::Permission.new("android.permission.INTERNET", max_sdk: "23")
-                                                               )
+          ::Apkstats::Entity::Permission.new("android.permission.INTERNET", max_sdk: nil),
+          ::Apkstats::Entity::Permission.new("android.permission.INTERNET", max_sdk: "23")
+        )
       end
     end
 
     context "parse_features" do
       it "should return each features" do
         command_output = [
-            "android.hardware.camera",
-            "android.hardware.faketouch not-required",
-            "android.hardware.camera implied: requested android.permission.CAMERA permission",
-            "android.hardware.faketouch implied: default feature for all apps",
+          "android.hardware.camera",
+          "android.hardware.faketouch not-required",
+          "android.hardware.camera implied: requested android.permission.CAMERA permission",
+          "android.hardware.faketouch implied: default feature for all apps",
         ].join("\n")
 
         expect(ApkAnalyzer.parse_features(command_output)).to contain_exactly(
-                                                              ::Apkstats::Entity::Feature.new("android.hardware.camera", not_required: false, implied_reason: nil),
-                                                              ::Apkstats::Entity::Feature.new("android.hardware.faketouch", not_required: true, implied_reason: nil),
-                                                              ::Apkstats::Entity::Feature.new("android.hardware.camera", not_required: false, implied_reason: "requested android.permission.CAMERA permission"),
-                                                              ::Apkstats::Entity::Feature.new("android.hardware.faketouch", not_required: false, implied_reason: "default feature for all apps")
-                                                            )
+          ::Apkstats::Entity::Feature.new("android.hardware.camera", not_required: false, implied_reason: nil),
+          ::Apkstats::Entity::Feature.new("android.hardware.faketouch", not_required: true, implied_reason: nil),
+          ::Apkstats::Entity::Feature.new("android.hardware.camera", not_required: false, implied_reason: "requested android.permission.CAMERA permission"),
+          ::Apkstats::Entity::Feature.new("android.hardware.faketouch", not_required: false, implied_reason: "default feature for all apps")
+        )
       end
     end
 
     context "to_feature" do
       it "should return a feature" do
         expect(
-            ApkAnalyzer.to_feature("android.hardware.camera")
+          ApkAnalyzer.to_feature("android.hardware.camera")
         ).to eq(::Apkstats::Entity::Feature.new("android.hardware.camera", not_required: false, implied_reason: nil))
       end
 
       it "should return a not-required feature" do
         expect(
-            ApkAnalyzer.to_feature("android.hardware.faketouch not-required")
+          ApkAnalyzer.to_feature("android.hardware.faketouch not-required")
         ).to eq(::Apkstats::Entity::Feature.new("android.hardware.faketouch", not_required: true, implied_reason: nil))
       end
 
       it "should return an implied feature" do
         expect(
-            ApkAnalyzer.to_feature("android.hardware.camera implied: requested android.permission.CAMERA permission")
+          ApkAnalyzer.to_feature("android.hardware.camera implied: requested android.permission.CAMERA permission")
         ).to eq(::Apkstats::Entity::Feature.new("android.hardware.camera", not_required: false, implied_reason: "requested android.permission.CAMERA permission"))
 
         expect(
-            ApkAnalyzer.to_feature("android.hardware.faketouch implied: default feature for all apps")
+          ApkAnalyzer.to_feature("android.hardware.faketouch implied: default feature for all apps")
         ).to eq(::Apkstats::Entity::Feature.new("android.hardware.faketouch", not_required: false, implied_reason: "default feature for all apps"))
       end
     end

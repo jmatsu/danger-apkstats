@@ -10,7 +10,7 @@ module Apkstats::Entity
       @name = name
       # cast to Boolean
       @not_required = not_required == true
-      @implied_reason = implied_reason ? implied_reason : nil
+      @implied_reason = implied_reason || nil
     end
 
     def not_required?
