@@ -102,7 +102,7 @@ module Danger
 
         diff = result[:diff]
 
-        md = "### Apk comparision results" << "\n\n"
+        md = +"### Apk comparision results" << "\n\n"
         md << "Property | Summary" << "\n"
         md << ":--- | :---" << "\n"
 
