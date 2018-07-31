@@ -1,0 +1,15 @@
+apkstats.command_type=:apk_analyzer
+apkstats.apk_filepath='./spec/fixture/app-base.apk'
+
+# custom command path
+# apkstats.command_path='/path/to/analysis_command'
+
+message(apkstats.file_size)
+message(apkstats.download_size)
+message(apkstats.required_features)
+message(apkstats.non_required_features)
+message(apkstats.permissions)
+message(apkstats.min_sdk)
+message(apkstats.target_sdk)
+
+apkstats.compare_with('/spec/fixture/app-other5.apk', do_report: true)

@@ -108,7 +108,7 @@ module Danger
     rescue StandardError => e
       warn("apkstats failed to execute the command due to #{e.message}")
 
-      e.backtrace && e.backtrace.each { |line| puts line }
+      e.backtrace && e.backtrace.each { |line| STDOUT.puts line }
     end
 
     # rubocop:enable Metrics/AbcSize
@@ -148,14 +148,6 @@ module Danger
 
     private
 
-    def up_byte_unit(size)
-      (size.to_i / (2**10).to_f).round(2)
-    end
-
-    def show_op(size)
-      size < 0 ? size : "+#{size}"
-    end
-
     def run_command(name)
       raise "#{command.command_path} is not found or is not executable" unless command.executable?
 
@@ -169,6 +161,7 @@ module Danger
     end
 
     def command
+      command_type ||= :apk_analyzer
       @command ||= COMMAND_TYPE_MAP[command_type.to_sym].new(command_path: command_path)
     end
   end
