@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Apkstats::Entity
   class ApkInfo
     KEYS = %i(

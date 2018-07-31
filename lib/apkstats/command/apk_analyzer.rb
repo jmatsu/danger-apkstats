@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Apkstats::Command
   class ApkAnalyzer
     include Apkstats::Command::Executable

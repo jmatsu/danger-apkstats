@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "helper/bytes"
 
 require_relative "entity/apk_info"
@@ -156,7 +158,7 @@ module Danger
     rescue StandardError => e
       warn("apkstats failed to execute the command due to #{e.message}")
 
-      e.backtrace && e.backtrace.each { |line| STDOUT.puts line }
+      e.backtrace&.each { |line| STDOUT.puts line }
     end
 
     # rubocop:enable Metrics/AbcSize
@@ -226,7 +228,7 @@ module Danger
     rescue StandardError => e
       warn("apkstats failed to execute the command #{name} due to #{e.message}")
 
-      e.backtrace && e.backtrace.each { |line| puts line }
+      e.backtrace&.each { |line| puts line }
 
       nil
     end

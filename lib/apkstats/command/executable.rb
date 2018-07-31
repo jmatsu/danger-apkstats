@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Apkstats::Command
   module Executable
     require "open3"

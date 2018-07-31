@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Apkstats::Helper
   module Bytes
     STEP = 2**10.to_f
@@ -56,7 +58,7 @@ module Apkstats::Helper
       private
 
       def add_op(size)
-        size < 0 ? size.to_s : "+#{size}"
+        size.negative? ? size.to_s : "+#{size}"
       end
     end
   end

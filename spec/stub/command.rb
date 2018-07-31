@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Apkstats::Stub
   class Command
     include Apkstats::Command::Executable
