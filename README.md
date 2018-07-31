@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/jmatsu/danger-apkstats.svg?branch=master)](https://travis-ci.com/jmatsu/danger-apkstats) [![Gem Version](https://badge.fury.io/rb/danger-apkstats.svg)](https://badge.fury.io/rb/danger-apkstats)
+
 # danger-apkstats
 
 A description of danger-apkstats.
