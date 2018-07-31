@@ -4,26 +4,26 @@ module Apkstats::Entity
     attr_reader :name
 
     # String?
-    attr_reader :impiled_reason
+    attr_reader :implied_reason
 
-    def initialize(name, not_required: nil, impiled_reason: nil)
+    def initialize(name, not_required: false, implied_reason: nil)
       @name = name
-      @not_required = not_required
-      @impiled_reason = impiled_reason
+      # cast to Boolean
+      @not_required = not_required == true
+      @implied_reason = implied_reason ? implied_reason : nil
     end
 
     def not_required?
-      # cast to Boolean
-      @not_required == true
+      @not_required
     end
 
-    def impiled?
-      @impiled_reason
+    def implied?
+      @implied_reason
     end
 
     def to_s
-      if impiled?
-        "#{name} (#{impiled_reason})"
+      if implied?
+        "#{name} (#{implied_reason})"
       elsif not_required?
         "#{name} (not-required)"
       else
@@ -31,11 +31,14 @@ module Apkstats::Entity
       end
     end
 
+    def ==(other)
+      return if !other || other.class != self.class
+
+      to_s == other.to_s
+    end
+
     def eql?(other)
-      return if !other || other.class == Feature
-      other.name == name &&
-        other.not_required? == not_required? &&
-        other.impiled_reason == impiled_reason
+      to_s.eql?(other.to_s)
     end
 
     def hash
@@ -43,9 +46,9 @@ module Apkstats::Entity
       h *= 31
       h += name.hash
 
-      if impiled_reason
+      if implied_reason
         h *= 31
-        h += impiled_reason.hash
+        h += implied_reason.hash
       end
 
       h
@@ -83,7 +86,7 @@ module Apkstats::Entity
     end
 
     def hash
-      other.hash
+      values.hash
     end
 
     def self.hashnize(features)

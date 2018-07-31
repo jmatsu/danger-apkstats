@@ -16,7 +16,7 @@ module Apkstats::Entity
                                               ]),
           permissions: Permissions.new([
                                          Permission.new("permission1"),
-                                         Permission.new("permission2", "23"),
+                                         Permission.new("permission2", max_sdk: "23"),
                                        ]),
           min_sdk: "16",
           target_sdk: "26",

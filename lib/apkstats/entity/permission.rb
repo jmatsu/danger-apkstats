@@ -6,7 +6,7 @@ module Apkstats::Entity
     # String?
     attr_reader :max_sdk
 
-    def initialize(name, max_sdk = nil)
+    def initialize(name, max_sdk: nil)
       @name = name
       @max_sdk = max_sdk
     end
@@ -19,10 +19,14 @@ module Apkstats::Entity
       end
     end
 
+    def ==(other)
+      return if !other || other.class != self.class
+
+      to_s == other.to_s
+    end
+
     def eql?(other)
-      return if !other || other.class == Permission
-      other.name == name &&
-        other.max_sdk == max_sdk
+      to_s.eql?(other.to_s)
     end
 
     def hash
@@ -68,7 +72,7 @@ module Apkstats::Entity
     end
 
     def hash
-      other.hash
+      values.hash
     end
 
     def self.hashnize(permissions)

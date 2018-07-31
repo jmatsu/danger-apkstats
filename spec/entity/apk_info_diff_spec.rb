@@ -3,7 +3,7 @@ require_relative "../spec_helper"
 module Apkstats::Entity
   describe Apkstats::Entity::ApkInfoDiff do
     def create_feature(name, opts = {})
-      Feature.new(name, not_required: opts[:not_required], impiled_reason: opts[:impiled_reason])
+      Feature.new(name, not_required: opts[:not_required], implied_reason: opts[:implied_reason])
     end
 
     def create_permission(name, opts = {})
@@ -17,7 +17,7 @@ module Apkstats::Entity
           required_features: Features.new([
                                             create_feature("feature1"),
                                             create_feature("feature2"),
-                                            create_feature("feature3", impiled_reason: "impiled_reason"),
+                                            create_feature("feature3", implied_reason: "implied_reason"),
                                           ]),
           non_required_features: Features.new([
                                                 create_feature("feature_1", not_required: true),

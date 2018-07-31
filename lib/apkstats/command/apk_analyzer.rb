@@ -15,16 +15,16 @@ module Apkstats::Command
     end
 
     def required_features(apk_filepath)
-      ::Apkstats::Entity::Features.new(parse_features(run_command("apk", "features", apk_filepath)))
+      ::Apkstats::Entity::Features.new(ApkAnalyzer.parse_features(run_command("apk", "features", apk_filepath)))
     end
 
     def non_required_features(apk_filepath)
-      all = Apkstats::Entity::Features.new(parse_features(run_command("apk", "features", "--not-required", apk_filepath)))
-      all - required_features(apk_filepath)
+      all_features = ApkAnalyzer.parse_features(run_command("apk", "features", "--not-required", apk_filepath))
+      Apkstats::Entity::Features.new(all_features.select(&:not_required?))
     end
 
     def permissions(apk_filepath)
-      ::Apkstats::Entity::Permissions.new(parse_permissions(run_command("manifest", "permissions", apk_filepath)))
+      ::Apkstats::Entity::Permissions.new(ApkAnalyzer.parse_permissions(run_command("manifest", "permissions", apk_filepath)))
     end
 
     def min_sdk(apk_filepath)
@@ -35,29 +35,29 @@ module Apkstats::Command
       run_command("manifest", "target-sdk", apk_filepath)
     end
 
-    private
-
-    def parse_permissions(command_output)
+    def self.parse_permissions(command_output)
       command_output.split(/\r?\n/).map { |s| to_permission(s) }
     end
 
-    def to_permission(str)
+    def self.to_permission(str)
       # If maxSdkVersion is specified, the output is like `android.permission.INTERNET' maxSdkVersion='23`
       name_seed, max_sdk_seed = str.strip.split(/\s/)
-      ::Apkstats::Entity::Permission.new(name_seed.gsub(/'$/, ""), max_sdk_seed && max_sdk_seed[/[0-9]+/])
+      ::Apkstats::Entity::Permission.new(name_seed.gsub(/'$/, ""), max_sdk: max_sdk_seed && max_sdk_seed[/[0-9]+/])
     end
 
-    def parse_features(command_output)
+    def self.parse_features(command_output)
       command_output.split(/\r?\n/).map { |s| to_feature(s) }
     end
 
-    def to_feature(str)
-      # format / name impiled: xxxx
-      # not-required and impiled cannot co-exist so it's okay to parse them like this
+    def self.to_feature(str)
+      # format / name implied: xxxx
+      # not-required and implied cannot co-exist so it's okay to parse them like this
       name, kind, tail = str.strip.split(/\s/, 3)
 
-      ::Apkstats::Entity::Feature.new(name, not_required: kind == "not-required", impiled_reason: kind == "impiled:" && tail)
+      ::Apkstats::Entity::Feature.new(name, not_required: kind == "not-required", implied_reason: kind == "implied:" && tail)
     end
+
+    private
 
     def run_command(*args)
       out, err, status = Open3.capture3("#{command_path} #{args.join(' ')}")

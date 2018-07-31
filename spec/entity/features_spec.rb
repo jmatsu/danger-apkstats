@@ -3,12 +3,12 @@ require_relative "../spec_helper"
 module Apkstats::Entity
   describe Apkstats::Entity::Features do
     def create_feature(name, opts = {})
-      Feature.new(name, not_required: opts[:not_required], impiled_reason: opts[:impiled_reason])
+      Feature.new(name, not_required: opts[:not_required], implied_reason: opts[:implied_reason])
     end
 
     let(:feature1) { create_feature("feature1") }
     let(:feature2) { create_feature("feature2", not_required: true) }
-    let(:feature3) { create_feature("feature3", impiled_reason: "due to tests") }
+    let(:feature3) { create_feature("feature3", implied_reason: "due to tests") }
 
     context "-" do
       it "should remove elements by name and not_required" do
@@ -20,7 +20,7 @@ module Apkstats::Entity
         new_feature2 = create_feature(feature2.name, not_required: !feature2.not_required?)
         expect((one_two - Features.new([new_feature2])).values).to contain_exactly(feature1, feature2)
 
-        new_feature3 = create_feature(feature3.name, impiled_reason: nil)
+        new_feature3 = create_feature(feature3.name, implied_reason: nil)
         expect((one_two_three - Features.new([new_feature3])).values).to contain_exactly(feature1, feature2)
       end
     end
