@@ -6,7 +6,7 @@ $:.unshift((ROOT + "lib").to_s)
 $:.unshift((ROOT + "spec").to_s)
 
 def fixture_path
-  "#{(ROOT + 'spec' + 'fixture')}/"
+  "#{(ROOT + 'fixture')}/"
 end
 
 require "bundler/setup"
