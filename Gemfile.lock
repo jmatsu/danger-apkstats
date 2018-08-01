@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    danger-apkstats (0.1.1)
+    danger-apkstats (0.1.2)
       danger-plugin-api (~> 1.0)
 
 GEM
