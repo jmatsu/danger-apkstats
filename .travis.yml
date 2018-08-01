@@ -23,7 +23,8 @@ script:
     echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > sdk/licenses/android-sdk-license
     sdk/tools/bin/sdkmanager "build-tools;27.0.3"
   - |
-    export ANDROID_HOME="$PWD/sdk"
-    cd acceptance_test
-    bundle exec danger --danger_id=acceptance_$(ruby -v|aws '$0=$2')
-  - ANDROID_HOME="$PWD/sdk" bundle exec rake spec
+    cd $TRAVIS_BUILD_DIR/acceptance_test
+    ANDROID_HOME="$TRAVIS_BUILD_DIR/sdk" bundle exec danger --danger_id=acceptance_$(ruby -v|aws '$0=$2')
+  - |
+    cd $TRAVIS_BUILD_DIR
+    ANDROID_HOME="$TRAVIS_BUILD_DIR/sdk" bundle exec rake spec
