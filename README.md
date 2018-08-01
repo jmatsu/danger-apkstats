@@ -2,22 +2,28 @@
 
 # danger-apkstats
 
-A description of danger-apkstats.
+This is a plugin of [Danger](https://github.com/danger/danger) for Android projects.
+This allows you to get attributes of your application file (apk) and report a summary of comparison between two application files.
 
 ## Installation
 
-    $ gem install danger-apkstats
+`gem install danger-apkstats`
+
+Also, you need to have ANDROID_HOME which indicates sdk location in your environment variables.
 
 ## Usage
 
-    Methods and attributes from this plugin are available in
-    your `Dangerfile` under the `apkstats` namespace.
-
-# Sample
+`apkstats` namespace is available under Dangerfile.
+    
+### Required preparation
 
 ```
 apkstats.apk_filepath='app-debug.apk' # required.
-apkstats.compare_with('app-other.apk', do_report: true)
+```
+
+### Show attributes
+
+```
 apkstats.file_size #=> Fixnum
 apkstats.download_size #=> Fixnum
 apkstats.required_features #=> Array<String> | Nil
@@ -27,11 +33,13 @@ apkstats.min_sdk #=> String | Nil
 apkstats.target_sdk #=> String | Nils
 ```
 
-## Compare apk files
+### Get a comparison report
 
-The report will be like below.
+```
+apkstats.compare_with(String, do_report: Boolean)
+```
 
-### Apk comparision results
+For example, the report will be like below.
 
 Property | Summary  
 :--- | :---
