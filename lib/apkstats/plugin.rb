@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "gem_version"
 require_relative "helper/bytes"
 
 require_relative "entity/apk_info"
