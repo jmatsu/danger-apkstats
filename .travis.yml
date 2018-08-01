@@ -25,5 +25,5 @@ script:
   - |
     export ANDROID_HOME="$PWD/sdk"
     cd acceptance_test
-    bundle exec danger --danger_id=acceptance
+    bundle exec danger --danger_id=acceptance_$(ruby -v|aws '$0=$2')
   - ANDROID_HOME="$PWD/sdk" bundle exec rake spec
