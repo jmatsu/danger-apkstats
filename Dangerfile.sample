@@ -11,5 +11,7 @@ message(apkstats.non_required_features)
 message(apkstats.permissions)
 message(apkstats.min_sdk)
 message(apkstats.target_sdk)
+message("#{apkstats.reference_count}")
+message("#{apkstats.dex_count}")
 
 apkstats.compare_with('/spec/fixture/app-other5.apk', do_report: true)
