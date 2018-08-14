@@ -38,11 +38,17 @@ module Apkstats::Command
     end
 
     def reference_count(apk_filepath)
-      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath)).values.map { |v| v.to_i }.sum.to_s
+      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath))
+        .values
+        .map(&:to_i)
+        .inject(:+)
+        .to_s
     end
 
     def dex_count(apk_filepath)
-      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath)).size.to_s
+      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath))
+        .size
+        .to_s
     end
 
     def self.parse_permissions(command_output)
@@ -69,10 +75,10 @@ module Apkstats::Command
 
     def self.parse_reference_to_map(command_output)
       reference_map = {}
-      command_output.split(/\r?\n/).map { |s| 
+      command_output.split(/\r?\n/).map do |s|
         dex_file, method_count = s.strip.split(/\t/)
         reference_map[dex_file] = method_count
-      }
+      end
       reference_map
     end
 
