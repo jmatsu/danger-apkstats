@@ -10,10 +10,12 @@ module Apkstats::Entity
       permissions
       min_sdk
       target_sdk
+      reference_count
+      dex_count
     ).freeze
 
     # Integer
-    attr_accessor :file_size, :download_size
+    attr_accessor :file_size, :download_size, :reference_count, :dex_count
 
     # String
     attr_accessor :min_sdk, :target_sdk

@@ -52,6 +52,14 @@ module Danger
   #
   #         apkstats.target_sdk
   #
+  # @example Show the methods reference count of your apk file.
+  #
+  #         apkstats.reference_count
+  #
+  # @example Show the number of dex of your apk file.
+  #
+  #         apkstats.dex_count
+  #
   # @see  Jumpei Matsuda/danger-apkstats
   # @tags android, apk_stats
   #
@@ -137,6 +145,22 @@ module Danger
           md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
         end
 
+        result[:base][:reference_count].tap do |reference_count|
+          md << "New Reference Count | #{reference_count}" << "\n"
+        end
+
+        diff[:reference_count].tap do |reference_count|
+          md << "Reference Count Change | #{reference_count}"
+        end
+
+        result[:base][:dex_count].tap do |dex_count|
+          md << "New Number of dex file(s) | #{dex_count}" << "\n"
+        end
+
+        diff[:dex_count].tap do |dex_count|
+          md << "Number of dex file(s) Change | #{dex_count}"
+        end
+
         report_hash_and_arrays = lambda { |key, name|
           list_up_entities = lambda { |type_key, label|
             diff[key][type_key].tap do |features|
@@ -218,6 +242,22 @@ module Danger
     # @return [String, Nil] return nil unless retrieved.
     def target_sdk(_opts = {})
       run_command(__method__)
+    end
+
+    # Show the methods reference count of your apk file.
+    #
+    # @return [Fixnum] return positive value if exists, otherwise -1.
+    def reference_count(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_i : -1
+    end
+
+    # Show the number of dex of your apk file.
+    #
+    # @return [Fixnum] return positive value if exists, otherwise -1.
+    def dex_count(_opts = {})
+      result = run_command(__method__)
+      result ? result.to_i : -1
     end
 
     private

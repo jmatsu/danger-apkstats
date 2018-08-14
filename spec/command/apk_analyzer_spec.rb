@@ -55,6 +55,14 @@ module Apkstats::Command
       it "target_sdk should return target sdk" do
         expect(command.target_sdk(apk_base)).to eq("28")
       end
+
+      it "reference_count should return reference count" do
+        expect(command.reference_count(apk_base)).to eq(15720.to_s)
+      end
+
+      it "dex_count should return dex count" do
+        expect(command.dex_count(apk_base)).to eq(1.to_s)
+      end
     end
 
     context "to_permission" do
