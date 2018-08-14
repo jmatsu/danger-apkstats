@@ -130,7 +130,7 @@ module Danger
         result[:base][:file_size].tap do |file_size|
           size = Apkstats::Helper::Bytes.from_b(file_size)
 
-          md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB " << "\n"
+          md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB) " << "\n"
         end
 
         diff[:file_size].tap do |file_size|
@@ -150,7 +150,7 @@ module Danger
         end
 
         diff[:reference_count].tap do |reference_count|
-          md << "Reference Count Change | #{reference_count}"
+          md << "Reference Count Change | #{reference_count}" << "\n"
         end
 
         result[:base][:dex_count].tap do |dex_count|
@@ -158,7 +158,7 @@ module Danger
         end
 
         diff[:dex_count].tap do |dex_count|
-          md << "Number of dex file(s) Change | #{dex_count}"
+          md << "Number of dex file(s) Change | #{dex_count}" << "\n"
         end
 
         report_hash_and_arrays = lambda { |key, name|
