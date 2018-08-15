@@ -71,12 +71,10 @@ module Apkstats::Command
     end
 
     def self.parse_reference_to_map(command_output)
-      reference_map = {}
-      command_output.split(/\r?\n/).map do |s|
-        dex_file, method_count = s.strip.split(/\t/)
-        reference_map[dex_file] = method_count
+      command_output.split(/\r?\n/).each_with_object({}) do |s, acc|
+        dex_file, method_count = s.strip.split(/\t/, 2)
+        acc[dex_file] = method_count
       end
-      reference_map
     end
 
     private
