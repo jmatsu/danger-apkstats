@@ -58,13 +58,13 @@ module Apkstats::Command
       end
 
       it "method_reference_count should return reference count" do
-        expect(command.method_reference_count(apk_base)).to eq(15_720.to_s)
-        expect(command.method_reference_count(apk_method64k)).to eq(124_304.to_s)
+        expect(command.method_reference_count(apk_base)).to eq(15_720)
+        expect(command.method_reference_count(apk_method64k)).to eq(124_304)
       end
 
       it "dex_count should return dex count" do
-        expect(command.dex_count(apk_base)).to eq(1.to_s)
-        expect(command.dex_count(apk_method64k)).to eq(2.to_s)
+        expect(command.dex_count(apk_base)).to eq(1)
+        expect(command.dex_count(apk_method64k)).to eq(2)
       end
     end
 

@@ -249,7 +249,7 @@ module Danger
     # @return [Fixnum] return positive value if exists, otherwise -1.
     def method_reference_count(_opts = {})
       result = run_command(__method__)
-      result ? result.to_i : -1
+      result || -1
     end
 
     # Show the number of dex of your apk file.
@@ -257,7 +257,7 @@ module Danger
     # @return [Fixnum] return positive value if exists, otherwise -1.
     def dex_count(_opts = {})
       result = run_command(__method__)
-      result ? result.to_i : -1
+      result || -1
     end
 
     private

@@ -42,13 +42,10 @@ module Apkstats::Command
         .values
         .map(&:to_i)
         .inject(:+)
-        .to_s
     end
 
     def dex_count(apk_filepath)
-      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath))
-        .size
-        .to_s
+      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath)).size
     end
 
     def self.parse_permissions(command_output)
