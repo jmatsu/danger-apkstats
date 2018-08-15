@@ -21,7 +21,7 @@ module Apkstats::Command
     #     permissions: Array<String>,
     #     min_sdk: String,
     #     target_sdk: String,
-    #     reference_count: Integer,
+    #     method_reference_count: Integer,
     #     dex_count: Integer,
     #   },
     #   other: {
@@ -32,7 +32,7 @@ module Apkstats::Command
     #     permissions: Array<String>,
     #     min_sdk: String,
     #     target_sdk: String,
-    #     reference_count: Integer,
+    #     method_reference_count: Integer,
     #     dex_count: Integer,
     #   },
     #   diff: {
@@ -52,7 +52,7 @@ module Apkstats::Command
     #     },
     #     min_sdk: Array<String>,
     #     target_sdk: Array<String>,
-    #     reference_count: Integer,
+    #     method_reference_count: Integer,
     #     dex_count: Integer,
     #   }
     # }

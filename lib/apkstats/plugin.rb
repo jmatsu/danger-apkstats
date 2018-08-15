@@ -54,7 +54,7 @@ module Danger
   #
   # @example Show the methods reference count of your apk file.
   #
-  #         apkstats.reference_count
+  #         apkstats.method_reference_count
   #
   # @example Show the number of dex of your apk file.
   #
@@ -145,12 +145,12 @@ module Danger
           md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
         end
 
-        result[:base][:reference_count].tap do |reference_count|
-          md << "New Reference Count | #{reference_count}" << "\n"
+        result[:base][:method_reference_count].tap do |method_reference_count|
+          md << "New Method Reference Count | #{method_reference_count}" << "\n"
         end
 
-        diff[:reference_count].tap do |reference_count|
-          md << "Reference Count Change | #{reference_count}" << "\n"
+        diff[:method_reference_count].tap do |method_reference_count|
+          md << "Method Reference Count Change | #{method_reference_count}" << "\n"
         end
 
         result[:base][:dex_count].tap do |dex_count|
@@ -247,7 +247,7 @@ module Danger
     # Show the methods reference count of your apk file.
     #
     # @return [Fixnum] return positive value if exists, otherwise -1.
-    def reference_count(_opts = {})
+    def method_reference_count(_opts = {})
       result = run_command(__method__)
       result ? result.to_i : -1
     end

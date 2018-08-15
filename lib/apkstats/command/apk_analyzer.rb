@@ -37,7 +37,7 @@ module Apkstats::Command
       run_command("manifest", "target-sdk", apk_filepath)
     end
 
-    def reference_count(apk_filepath)
+    def method_reference_count(apk_filepath)
       ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath))
         .values
         .map(&:to_i)
