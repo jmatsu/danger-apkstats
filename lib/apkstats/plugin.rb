@@ -89,7 +89,7 @@ module Danger
     # @return [String]
     attr_accessor :apk_filepath
 
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 
     # Get stats of two apk files and calculate diffs between them.
     #
@@ -186,7 +186,7 @@ module Danger
       e.backtrace&.each { |line| STDOUT.puts line }
     end
 
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     # Show the file size of your apk file.
     #
