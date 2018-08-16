@@ -22,6 +22,8 @@ module Apkstats::Entity
                                        ]),
           min_sdk: "16",
           target_sdk: "26",
+          method_reference_count: 20_000,
+          dex_count: 1,
       }
     end
 

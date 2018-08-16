@@ -10,6 +10,7 @@ module Apkstats::Command
     let(:apk_other3) { fixture_path + "app-other3.apk" }
     let(:apk_other4) { fixture_path + "app-other4.apk" }
     let(:apk_other5) { fixture_path + "app-other5.apk" }
+    let(:apk_method64k) { fixture_path + "app-method64k.apk" }
 
     it "should use custom path if set" do
       expect(ApkAnalyzer.new({}).command_path).to eq("#{ENV.fetch('ANDROID_HOME')}/tools/bin/apkanalyzer")
@@ -54,6 +55,16 @@ module Apkstats::Command
 
       it "target_sdk should return target sdk" do
         expect(command.target_sdk(apk_base)).to eq("28")
+      end
+
+      it "method_reference_count should return reference count" do
+        expect(command.method_reference_count(apk_base)).to eq(15_720)
+        expect(command.method_reference_count(apk_method64k)).to eq(124_304)
+      end
+
+      it "dex_count should return dex count" do
+        expect(command.dex_count(apk_base)).to eq(1)
+        expect(command.dex_count(apk_method64k)).to eq(2)
       end
     end
 

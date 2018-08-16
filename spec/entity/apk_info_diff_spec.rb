@@ -31,6 +31,8 @@ module Apkstats::Entity
                                        ]),
           min_sdk: "16",
           target_sdk: "26",
+          method_reference_count: 20_000,
+          dex_count: 1,
       }
     end
 
@@ -57,6 +59,8 @@ module Apkstats::Entity
                                        ]),
           min_sdk: "21",
           target_sdk: "27",
+          method_reference_count: base_apk_values[:method_reference_count] + 2000,
+          dex_count: base_apk_values[:dex_count] + 1,
       }
     end
 
@@ -105,6 +109,8 @@ module Apkstats::Entity
       )
       expect(diff.min_sdk).to eq(%w(16 21))
       expect(diff.target_sdk).to eq(%w(26 27))
+      expect(diff.method_reference_count).to eq(-2000)
+      expect(diff.dex_count).to eq(-1)
     end
   end
 end

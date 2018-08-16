@@ -31,6 +31,8 @@ apkstats.non_required_features #=> Array<String> | Nil
 apkstats.permissions #=> Array<String> | Nil
 apkstats.min_sdk #=> String | Nil
 apkstats.target_sdk #=> String | Nils
+apkstats.reference_count #=> Fixnum
+apkstats.dex_count #=> Fixnum
 ```
 
 ### Get a comparison report
@@ -43,12 +45,14 @@ For example, the report will be like below.
 
 Property | Summary  
 :--- | :---
-New File Size | 1621248 Bytes. (1.55 MB
+New File Size | 1621248 Bytes. (1.55 MB)
 File Size Change | -13352 Bytes. (-13.04 KB)
 Download Size Change | +41141 Bytes. (+40.18 KB)
 Removed Required Features | - android.hardware.camera
 Removed Non-required Features | - android.hardware.camera.front (not-required)
 Removed Permissions | - android.permission.INTERNET<br>- android.permission.CAMERA
+New Number of dex file(s) | 15720
+Number of dex file(s) Change | 1
 
 ## Development
 

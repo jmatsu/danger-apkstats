@@ -52,6 +52,14 @@ module Danger
   #
   #         apkstats.target_sdk
   #
+  # @example Show the methods reference count of your apk file.
+  #
+  #         apkstats.method_reference_count
+  #
+  # @example Show the number of dex of your apk file.
+  #
+  #         apkstats.dex_count
+  #
   # @see  Jumpei Matsuda/danger-apkstats
   # @tags android, apk_stats
   #
@@ -81,7 +89,7 @@ module Danger
     # @return [String]
     attr_accessor :apk_filepath
 
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 
     # Get stats of two apk files and calculate diffs between them.
     #
@@ -122,7 +130,7 @@ module Danger
         result[:base][:file_size].tap do |file_size|
           size = Apkstats::Helper::Bytes.from_b(file_size)
 
-          md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB " << "\n"
+          md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB) " << "\n"
         end
 
         diff[:file_size].tap do |file_size|
@@ -135,6 +143,22 @@ module Danger
           size = Apkstats::Helper::Bytes.from_b(download_size)
 
           md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
+        end
+
+        result[:base][:method_reference_count].tap do |method_reference_count|
+          md << "New Method Reference Count | #{method_reference_count}" << "\n"
+        end
+
+        diff[:method_reference_count].tap do |method_reference_count|
+          md << "Method Reference Count Change | #{method_reference_count}" << "\n"
+        end
+
+        result[:base][:dex_count].tap do |dex_count|
+          md << "New Number of dex file(s) | #{dex_count}" << "\n"
+        end
+
+        diff[:dex_count].tap do |dex_count|
+          md << "Number of dex file(s) Change | #{dex_count}" << "\n"
         end
 
         report_hash_and_arrays = lambda { |key, name|
@@ -162,7 +186,7 @@ module Danger
       e.backtrace&.each { |line| STDOUT.puts line }
     end
 
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     # Show the file size of your apk file.
     #
@@ -218,6 +242,22 @@ module Danger
     # @return [String, Nil] return nil unless retrieved.
     def target_sdk(_opts = {})
       run_command(__method__)
+    end
+
+    # Show the methods reference count of your apk file.
+    #
+    # @return [Fixnum] return positive value if exists, otherwise -1.
+    def method_reference_count(_opts = {})
+      result = run_command(__method__)
+      result || -1
+    end
+
+    # Show the number of dex of your apk file.
+    #
+    # @return [Fixnum] return positive value if exists, otherwise -1.
+    def dex_count(_opts = {})
+      result = run_command(__method__)
+      result || -1
     end
 
     private

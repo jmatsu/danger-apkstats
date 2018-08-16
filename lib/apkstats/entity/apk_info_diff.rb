@@ -63,5 +63,15 @@ module Apkstats::Entity
       # String
       [@base[__method__], @other[__method__]].uniq
     end
+
+    def method_reference_count
+      # Integer
+      @base[__method__].to_i - @other[__method__].to_i
+    end
+
+    def dex_count
+      # Integer
+      @base[__method__].to_i - @other[__method__].to_i
+    end
   end
 end

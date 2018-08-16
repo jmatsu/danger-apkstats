@@ -37,6 +37,17 @@ module Apkstats::Command
       run_command("manifest", "target-sdk", apk_filepath)
     end
 
+    def method_reference_count(apk_filepath)
+      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath))
+        .values
+        .map(&:to_i)
+        .inject(:+)
+    end
+
+    def dex_count(apk_filepath)
+      ApkAnalyzer.parse_reference_to_map(run_command("dex", "references", apk_filepath)).size
+    end
+
     def self.parse_permissions(command_output)
       command_output.split(/\r?\n/).map { |s| to_permission(s) }
     end
@@ -57,6 +68,13 @@ module Apkstats::Command
       name, kind, tail = str.strip.split(/\s/, 3)
 
       ::Apkstats::Entity::Feature.new(name, not_required: kind == "not-required", implied_reason: kind == "implied:" && tail)
+    end
+
+    def self.parse_reference_to_map(command_output)
+      command_output.split(/\r?\n/).each_with_object({}) do |s, acc|
+        dex_file, method_count = s.strip.split(/\t/, 2)
+        acc[dex_file] = method_count
+      end
     end
 
     private
