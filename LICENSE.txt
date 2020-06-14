@@ -1,4 +1,4 @@
-Copyright (c) 2018 Jumpei Matsuda <jmatsu.drm@gmail.com>
+Copyright (c) 2018-2020 Jumpei Matsuda <jmatsu.drm@gmail.com>
 
 MIT License
 

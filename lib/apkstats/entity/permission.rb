@@ -70,6 +70,7 @@ module Apkstats::Entity
 
     def eql?(other)
       return if !other || other.class == Permissions
+
       other.values == values
     end
 

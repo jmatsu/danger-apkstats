@@ -1,0 +1,51 @@
+version: 2.1
+
+executors:
+  android:
+    docker:
+    - image: circleci/android:api-29
+    working_directory: ~/workspace
+    environment:
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" -Dorg.gradle.daemon=false -Dorg.gradle.parallel=false'
+
+  ruby:
+    docker:
+      - image: circleci/ruby:2.7.1
+    working_directory: ~/workspace
+    
+orbs:
+  ruby: circleci/ruby@1.0.0
+
+jobs:
+  lint:
+    executor: ruby
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run: bundle exec rake rubocops
+
+  test:
+    parameters:
+      ruby_version:
+        type: string
+        description: 'Ruby version to be used'
+    executor: android
+    steps:
+      - checkout
+      - ruby/install:
+          version: << parameters.ruby_version >>
+      - ruby/install-deps
+      - run: bundle exec rake specs spec_docs
+
+workflows:
+  materix_test:
+    jobs:
+      - test:
+          name: test@2.5.8
+          ruby_version: 2.5.8
+      - test:
+          name: test@2.6.6
+          ruby_version: 2.6.6
+      - test:
+          name: test@2.7.1
+          ruby_version: 2.7.1

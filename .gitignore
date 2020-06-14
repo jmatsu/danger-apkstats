@@ -4,3 +4,4 @@ pkg
 .yardoc
 **/vendor/bundle/
 *.gem
+.bundle/
