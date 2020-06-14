@@ -3,13 +3,10 @@ version: 2.1
 executors:
   base:
     docker:
-    - image: circleci/ruby:<< parameters.ruby_version >>-node-browsers
-    parameters:
-      ruby_version:
-        type: string
+    - image: circleci/android:api-29
     working_directory: ~/workspace
     environment:
-      ANDROID_HOME: /home/circleci/sdk # deprecated
+      ANDROID_HOME: /home/circleci/sdk/cmdline-tools # deprecated and fake
       ANDROID_SDK_ROOT: /home/circleci/sdk
 
   ruby:
@@ -39,11 +36,27 @@ commands:
           fi
           mkdir -p $ANDROID_SDK_ROOT/licenses
           cp .circleci/android-sdk-license $ANDROID_SDK_ROOT/licenses/
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/tools/bin/sdkmanager "build-tools;<< parameters.build-tools >>" || :
+          $ANDROID_SDK_ROOT/cmdline-tools/tools/bin/sdkmanager "build-tools;<< parameters.build-tools >>" 
       - save_cache:
           key: v1-android-sdk-{{ arch }}-<< parameters.zip-version >>-<< parameters.build-tools >>
           paths:
             - ~/sdk
+  install-ruby:
+    parameters:
+      ruby-version:
+        type: string
+    steps:
+      - run: |
+          sudo apt-get update && \
+          cd /tmp && wget -O ruby-install-0.6.1.tar.gz https://github.com/postmodern/ruby-install/archive/v0.6.1.tar.gz && \
+          tar -xzvf ruby-install-0.6.1.tar.gz && \
+          cd ruby-install-0.6.1 && \
+          sudo make install && \
+          ruby-install --cleanup ruby << parameters.ruby-version >> && \
+          rm -r /tmp/ruby-install-* && \
+          sudo rm -rf /var/lib/apt/lists/*
+
+          export PATH=${HOME}/.rubies/ruby-<< parameters.ruby-version >>/bin:\${PATH} >> $BASH_ENV
   bundle-install:
     steps:
       - restore_cache:
@@ -68,12 +81,12 @@ jobs:
       ruby_version:
         type: string
         description: 'Ruby version to be used'
-    executor:
-      name: base
-      ruby_version: << parameters.ruby_version >>
+    executor: base
     
     steps:
       - checkout
+      - install-ruby:
+          ruby-version: << parameters.ruby_version >>
       - install-android-sdk:
           zip-version: "6514223"
           build-tools: 29.0.2
