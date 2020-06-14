@@ -84,6 +84,7 @@ module Apkstats::Entity
 
     def eql?(other)
       return if !other || other.class == Features
+
       other.values == values
     end
 

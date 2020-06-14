@@ -1,0 +1,109 @@
+version: 2.1
+
+executors:
+  base:
+    docker:
+    - image: circleci/android:api-29
+    working_directory: ~/workspace
+    environment:
+      ANDROID_HOME: /home/circleci/sdk/cmdline-tools # deprecated and fake
+      ANDROID_SDK_ROOT: /home/circleci/sdk
+
+  ruby:
+    docker:
+      - image: circleci/ruby:2.7.1
+    working_directory: ~/workspace
+
+commands:
+  install-android-sdk:
+    parameters:
+      zip-version:
+        type: string
+        description: the version of the zip archive
+      build-tools:
+        type: string
+    steps:
+      - restore_cache:
+          key: v1-android-sdk-{{ arch }}-<< parameters.zip-version >>-<< parameters.build-tools >>
+      - run: |
+          version="<< parameters.zip-version >>"
+          if [ "$(cat $ANDROID_SDK_ROOT/.sdk_tools_version || echo)" != "$version" ]; then	
+            rm -fr $ANDROID_SDK_ROOT || :
+            mkdir -p $ANDROID_SDK_ROOT/licenses	$ANDROID_SDK_ROOT/cmdline-tools
+            curl -o sdk-tools-linux.zip "https://dl.google.com/android/repository/commandlinetools-linux-${version}_latest.zip"	
+            unzip "sdk-tools-linux.zip" -d $ANDROID_SDK_ROOT/cmdline-tools
+            echo "$version" > $ANDROID_SDK_ROOT/.sdk_tools_version
+          fi
+          mkdir -p $ANDROID_SDK_ROOT/licenses
+          cp .circleci/android-sdk-license $ANDROID_SDK_ROOT/licenses/
+          $ANDROID_SDK_ROOT/cmdline-tools/tools/bin/sdkmanager "build-tools;<< parameters.build-tools >>" 
+      - save_cache:
+          key: v1-android-sdk-{{ arch }}-<< parameters.zip-version >>-<< parameters.build-tools >>
+          paths:
+            - ~/sdk
+  install-ruby:
+    parameters:
+      ruby-version:
+        type: string
+    steps:
+      - run: |
+          sudo apt-get update && \
+          cd /tmp && wget -O ruby-install-0.6.1.tar.gz https://github.com/postmodern/ruby-install/archive/v0.6.1.tar.gz && \
+          tar -xzvf ruby-install-0.6.1.tar.gz && \
+          cd ruby-install-0.6.1 && \
+          sudo make install && \
+          ruby-install --cleanup ruby << parameters.ruby-version >> && \
+          rm -r /tmp/ruby-install-* && \
+          sudo rm -rf /var/lib/apt/lists/*
+
+          echo "export PATH=${HOME}/.rubies/ruby-<< parameters.ruby-version >>/bin:\${PATH}" >> $BASH_ENV
+      - run: ruby --version
+  bundle-install:
+    steps:
+      - restore_cache:
+          key: v1-bundle-{{ arch }}-{{ checksum "./Gemfile.lock" }}
+      - run: gem install bundler -v 2.1.4
+      - run: bundle install --path=vendor/bundle
+      - save_cache:
+          key: v1-bundle-{{ arch }}-{{ checksum "./Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+jobs:
+  lint:
+    executor: ruby
+    steps:
+      - checkout
+      - bundle-install
+      - run: bundle exec rake rubocop
+
+  test:
+    parameters:
+      ruby_version:
+        type: string
+        description: 'Ruby version to be used'
+    executor: base
+    
+    steps:
+      - checkout
+      - install-ruby:
+          ruby-version: << parameters.ruby_version >>
+      - install-android-sdk:
+          zip-version: "6514223"
+          build-tools: 29.0.2
+      - bundle-install
+      - run: bundle exec rake specs spec_docs
+
+workflows:
+  materix_test:
+    jobs:
+      - lint
+      - test:
+          name: test@2.5.8
+          ruby_version: 2.5.8
+      - test:
+          name: test@2.6.6
+          ruby_version: 2.6.6
+      - test:
+          name: test@2.7.1
+          ruby_version: 2.7.1

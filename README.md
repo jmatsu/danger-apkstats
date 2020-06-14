@@ -61,3 +61,9 @@ Number of dex file(s) Change | 1
 3. Run `bundle exec rake spec` to run the tests.
 4. Use `bundle exec guard` to automatically have tests run as you make changes.
 5. Make your changes.
+
+### Supported ruby versions
+
+Support only versions which are in normal and/or security maintenance.
+
+ref: https://www.ruby-lang.org/en/downloads/branches/

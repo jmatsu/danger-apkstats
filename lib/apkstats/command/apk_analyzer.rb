@@ -80,8 +80,9 @@ module Apkstats::Command
     private
 
     def run_command(*args)
-      out, err, status = Open3.capture3("#{command_path} #{args.join(' ')}")
+      out, err, status = Open3.capture3(command_path, *args)
       raise err unless status.success?
+
       out.rstrip
     end
   end
