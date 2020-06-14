@@ -57,6 +57,7 @@ commands:
           sudo rm -rf /var/lib/apt/lists/*
 
           export PATH=${HOME}/.rubies/ruby-<< parameters.ruby-version >>/bin:\${PATH} >> $BASH_ENV
+      - run: ruby --version
   bundle-install:
     steps:
       - restore_cache:
