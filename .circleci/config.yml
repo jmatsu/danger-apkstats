@@ -9,6 +9,7 @@ executors:
         type: string
     working_directory: ~/workspace
     environment:
+      ANDROID_HOME: /home/circleci/sdk # deprecated
       ANDROID_SDK_ROOT: /home/circleci/sdk
 
   ruby:
