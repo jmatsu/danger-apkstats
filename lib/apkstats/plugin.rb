@@ -283,7 +283,7 @@ module Danger
       return @apkanalyzer_command if defined?(@apkanalyzer_command)
 
       command_path = apkanalyzer_path || begin
-                                           android_home = ENV['ANDROID_HOME']
+                                           android_home = ENV["ANDROID_HOME"]
 
                                            if android_home
                                              warn("apkstats will not use ANDROID_HOME in further versions because ANDROID_HOME has been officially deprecated.")
@@ -297,11 +297,11 @@ module Danger
       @apkanalyzer_command = Apkstats::Command::ApkAnalyzer.new(command_path: command_path)
     end
 
-    # @param [StandardError] e a happened error
+    # @param [StandardError] err a happened error
     # @return [NilClass]
-    def on_error(e)
-      STDERR.puts e.message
-      e.backtrace&.each { |line| STDERR.puts line }
+    def on_error(err)
+      warn e.message
+      e.backtrace&.each { |line| warn line }
       nil
     end
   end
