@@ -74,6 +74,9 @@ module Danger
     private_constant(:COMMAND_TYPE_MAP)
 
     # @deprecated this field have no effect
+    # This will be removed in further versions
+    #
+    # @return [String] _
     attr_accessor :command_type
 
     # *Required*
@@ -83,9 +86,11 @@ module Danger
     attr_accessor :apkanalyzer_path
 
     # @deprecated Use apkanalyzer_path instead
+    # @return [String] _
     alias command_path apkanalyzer_path
 
     # @deprecated Use apkanalyzer_path= instead
+    # @return [String] _
     alias command_path= apkanalyzer_path=
 
     # *Required*
