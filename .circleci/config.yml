@@ -99,11 +99,5 @@ workflows:
     jobs:
       - lint
       - test:
-          name: test@2.5.8
-          ruby_version: 2.5.8
-      - test:
-          name: test@2.6.6
-          ruby_version: 2.6.6
-      - test:
-          name: test@2.7.1
-          ruby_version: 2.7.1
+          matrix:
+            ruby_version: [2.5.8, 2.6.6, 2.7.1]
