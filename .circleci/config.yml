@@ -100,4 +100,5 @@ workflows:
       - lint
       - test:
           matrix:
-            ruby_version: [2.5.8, 2.6.6, 2.7.1]
+            parameters:
+              ruby_version: [2.5.8, 2.6.6, 2.7.1]
