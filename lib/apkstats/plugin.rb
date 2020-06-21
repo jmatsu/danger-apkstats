@@ -300,8 +300,8 @@ module Danger
     # @param [StandardError] err a happened error
     # @return [NilClass]
     def on_error(err)
-      warn e.message
-      e.backtrace&.each { |line| warn line }
+      warn err.message
+      err.backtrace&.each { |line| warn line }
       nil
     end
   end
