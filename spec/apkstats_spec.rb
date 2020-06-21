@@ -5,8 +5,8 @@ require File.expand_path("spec_helper", __dir__)
 module Danger
   describe Danger::DangerApkstats do
     before do
-      ENV.delete('ANDROID_HOME')
-      ENV.delete('ANDROID_SDK_ROOT')
+      ENV.delete("ANDROID_HOME")
+      ENV.delete("ANDROID_SDK_ROOT")
     end
 
     it "should be a plugin" do
@@ -29,7 +29,7 @@ module Danger
 
           context "with ANDROID_HOME" do
             before do
-              ENV['ANDROID_HOME'] = "dummy"
+              ENV["ANDROID_HOME"] = "dummy"
             end
 
             it { expect(apkstats.send(:apkanalyzer_command)).to be_kind_of(Apkstats::Command::ApkAnalyzer) }
@@ -51,7 +51,7 @@ module Danger
 
           context "with ANDROID_HOME" do
             before do
-              ENV['ANDROID_HOME'] = "dummy"
+              ENV["ANDROID_HOME"] = "dummy"
             end
 
             it { expect(apkstats.send(:apkanalyzer_command)).to be_kind_of(Apkstats::Command::ApkAnalyzer) }

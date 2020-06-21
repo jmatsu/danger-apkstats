@@ -6,8 +6,8 @@ executors:
     - image: circleci/android:api-29
     working_directory: ~/workspace
     environment:
-      ANDROID_HOME: /home/circleci/sdk/cmdline-tools # deprecated and fake
       ANDROID_SDK_ROOT: /home/circleci/sdk
+      APKANALYZER_PATH: /home/circleci/sdk/cmdline-tools/tools/bin/apkanalyzer
 
   ruby:
     docker:

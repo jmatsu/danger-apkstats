@@ -17,7 +17,7 @@ module Apkstats::Command
     end
 
     context "command" do
-      let(:command) { ApkAnalyzer.new({}) }
+      let(:command) { ApkAnalyzer.new(command_path: ENV.fetch("APKANALYZER_PATH")) }
 
       it "file_size should return apk size" do
         expect(command.file_size(apk_base)).to eq(1_621_248.to_s)
