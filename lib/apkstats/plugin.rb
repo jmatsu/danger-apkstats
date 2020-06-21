@@ -64,24 +64,34 @@ module Danger
   # @tags android, apk_stats
   #
   class DangerApkstats < Plugin
+    class Error < StandardError; end
+
+    # @deprecated this field have no effect
     COMMAND_TYPE_MAP = {
       apk_analyzer: Apkstats::Command::ApkAnalyzer,
     }.freeze
 
     private_constant(:COMMAND_TYPE_MAP)
 
-    # *Optional*
-    # A command type to be run.
-    # One of keys of COMMAND_TYPE_MAP
+    # @deprecated this field have no effect
+    # This will be removed in further versions
     #
-    # @return [Symbol, Nil] _
+    # @return [String] _
     attr_accessor :command_type
 
-    # *Optional*
-    # A custom command path
+    # *Required*
+    # A path of apkanalyzer command
     #
-    # @return [Symbol, Nil] _
-    attr_accessor :command_path
+    # @return [String] _
+    attr_accessor :apkanalyzer_path
+
+    # @deprecated Use apkanalyzer_path instead
+    # @return [String] _
+    alias command_path apkanalyzer_path
+
+    # @deprecated Use apkanalyzer_path= instead
+    # @return [String] _
+    alias command_path= apkanalyzer_path=
 
     # *Required*
     # Your target apk filepath.
@@ -183,7 +193,7 @@ module Danger
     rescue StandardError => e
       warn("apkstats failed to execute the command due to #{e.message}")
 
-      e.backtrace&.each { |line| STDOUT.puts line }
+      on_error(e)
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -192,7 +202,7 @@ module Danger
     #
     # @return [Fixnum] return positive value if exists, otherwise -1.
     def file_size(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result ? result.to_i : -1
     end
 
@@ -200,7 +210,7 @@ module Danger
     #
     # @return [Fixnum] return positive value if exists, otherwise -1.
     def download_size(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result ? result.to_i : -1
     end
 
@@ -209,7 +219,7 @@ module Danger
     #
     # @return [Array<String>, Nil] return nil unless retrieved.
     def required_features(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result ? result.to_a : nil
     end
 
@@ -218,7 +228,7 @@ module Danger
     #
     # @return [Array<String>, Nil] return nil unless retrieved.
     def non_required_features(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result ? result.to_a : nil
     end
 
@@ -226,7 +236,7 @@ module Danger
     #
     # @return [Array<String>, Nil] return nil unless retrieved.
     def permissions(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result ? result.to_a : nil
     end
 
@@ -234,21 +244,21 @@ module Danger
     #
     # @return [String, Nil] return nil unless retrieved.
     def min_sdk(_opts = {})
-      run_command(__method__)
+      run_command(apkanalyzer_command, __method__)
     end
 
     # Show the target sdk version of your apk file.
     #
     # @return [String, Nil] return nil unless retrieved.
     def target_sdk(_opts = {})
-      run_command(__method__)
+      run_command(apkanalyzer_command, __method__)
     end
 
     # Show the methods reference count of your apk file.
     #
     # @return [Fixnum] return positive value if exists, otherwise -1.
     def method_reference_count(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result || -1
     end
 
@@ -256,27 +266,48 @@ module Danger
     #
     # @return [Fixnum] return positive value if exists, otherwise -1.
     def dex_count(_opts = {})
-      result = run_command(__method__)
+      result = run_command(apkanalyzer_command, __method__)
       result || -1
     end
 
     private
 
-    def run_command(name)
+    # @param [Apkstats::Command::Executable] command a wrapper class of a command
+    # @param [String] name an attribute name
+    def run_command(command, name)
       raise "#{command.command_path} is not found or is not executable" unless command.executable?
 
       return command.send(name, apk_filepath)
     rescue StandardError => e
       warn("apkstats failed to execute the command #{name} due to #{e.message}")
 
-      e.backtrace&.each { |line| puts line }
-
-      nil
+      on_error(e)
     end
 
-    def command
-      command_type ||= :apk_analyzer
-      @command ||= COMMAND_TYPE_MAP[command_type.to_sym].new(command_path: command_path)
+    def apkanalyzer_command
+      return @apkanalyzer_command if defined?(@apkanalyzer_command)
+
+      command_path = apkanalyzer_path || begin
+                                           android_home = ENV["ANDROID_HOME"]
+
+                                           if android_home
+                                             warn("apkstats will not use ANDROID_HOME in further versions because ANDROID_HOME has been officially deprecated.")
+                                           else
+                                             raise Error, "Please specify apkanalyzer_path to execute apkstats"
+                                           end
+
+                                           "#{android_home}/tools/bin/apkanalyzer"
+                                         end
+
+      @apkanalyzer_command = Apkstats::Command::ApkAnalyzer.new(command_path: command_path)
+    end
+
+    # @param [StandardError] err a happened error
+    # @return [NilClass]
+    def on_error(err)
+      warn err.message
+      err.backtrace&.each { |line| warn line }
+      nil
     end
   end
 end
