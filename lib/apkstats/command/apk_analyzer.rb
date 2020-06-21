@@ -5,7 +5,7 @@ module Apkstats::Command
     include Apkstats::Command::Executable
 
     def initialize(opts)
-      @command_path = opts[:command_path] || "#{ENV.fetch('ANDROID_HOME')}/tools/bin/apkanalyzer"
+      @command_path = opts.fetch(:command_path)
     end
 
     def file_size(apk_filepath)

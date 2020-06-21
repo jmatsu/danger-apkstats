@@ -12,8 +12,7 @@ module Apkstats::Command
     let(:apk_other5) { fixture_path + "app-other5.apk" }
     let(:apk_method64k) { fixture_path + "app-method64k.apk" }
 
-    it "should use custom path if set" do
-      expect(ApkAnalyzer.new({}).command_path).to eq("#{ENV.fetch('ANDROID_HOME')}/tools/bin/apkanalyzer")
+    it "should use command_path" do
       expect(ApkAnalyzer.new(command_path: "/y/z").command_path).to eq("/y/z")
     end
 

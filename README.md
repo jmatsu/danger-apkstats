@@ -7,9 +7,15 @@ This allows you to get attributes of your application file (apk) and report a su
 
 ## Installation
 
-`gem install danger-apkstats`
+`gem install danger-apkstats` or add `danger-apkstats` to your Gemfile.
 
-Also, you need to have ANDROID_HOME which indicates sdk location in your environment variables.
+Please specify the path of apkanalyzer in your Dangerfile.
+
+```ruby
+apkstats.apkanalyzer_path='/path/to/apkanalyzer'
+```
+
+`ANDROID_HOME` has been officially deprecated. `ANDROID_SDK_ROOT` is similar to `ANDROID_HOME` but differs actually. And also, the change indicated the possibility of further deprecations and/or breaking changes in the Android SDK structure.
 
 ## Usage
 
