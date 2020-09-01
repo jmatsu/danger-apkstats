@@ -304,7 +304,7 @@ module Danger
         end
       end
 
-      command_path.chomp!
+      command_path = command_path.chomp
 
       raise Error, "Please include apkanalyer in your PATH or specify it explicitly." if command_path.empty?
 
