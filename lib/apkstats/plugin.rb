@@ -109,91 +109,93 @@ module Danger
     def compare_with(other_apk_filepath, do_report: true)
       raise "apk filepaths must be specified" if apk_filepath.nil? || apk_filepath.empty?
 
-      base_apk = Apkstats::Entity::ApkInfo.new(command, apk_filepath)
-      other_apk = Apkstats::Entity::ApkInfo.new(command, other_apk_filepath)
+      base_apk = Apkstats::Entity::ApkInfo.new(apkanalyzer_command, apk_filepath)
+      other_apk = Apkstats::Entity::ApkInfo.new(apkanalyzer_command, other_apk_filepath)
 
-      return {
+      result = {
           base: base_apk.to_h,
           other: base_apk.to_h,
           diff: Apkstats::Entity::ApkInfoDiff.new(base_apk, other_apk).to_h,
-      }.tap do |result|
-        break unless do_report
+      }
 
-        diff = result[:diff]
+      return result unless do_report
 
-        md = +"### Apk comparison results" << "\n\n"
-        md << "Property | Summary" << "\n"
-        md << ":--- | :---" << "\n"
+      diff = result[:diff]
 
-        diff[:min_sdk].tap do |min_sdk|
-          break if min_sdk.size == 1
+      md = +"### Apk comparison results" << "\n\n"
+      md << "Property | Summary" << "\n"
+      md << ":--- | :---" << "\n"
 
-          md << "Min SDK Change | Before #{min_sdk[1]} / After #{min_sdk[0]}" << "\n"
-        end
+      diff[:min_sdk].tap do |min_sdk|
+        break if min_sdk.size == 1
 
-        diff[:target_sdk].tap do |target_sdk|
-          break if target_sdk.size == 1
+        md << "Min SDK Change | Before #{min_sdk[1]} / After #{min_sdk[0]}" << "\n"
+      end
 
-          md << "Target SDK Change | Before #{target_sdk[1]} / After #{target_sdk[0]}" << "\n"
-        end
+      diff[:target_sdk].tap do |target_sdk|
+        break if target_sdk.size == 1
 
-        result[:base][:file_size].tap do |file_size|
-          size = Apkstats::Helper::Bytes.from_b(file_size)
+        md << "Target SDK Change | Before #{target_sdk[1]} / After #{target_sdk[0]}" << "\n"
+      end
 
-          md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB) " << "\n"
-        end
+      result[:base][:file_size].tap do |file_size|
+        size = Apkstats::Helper::Bytes.from_b(file_size)
 
-        diff[:file_size].tap do |file_size|
-          size = Apkstats::Helper::Bytes.from_b(file_size)
+        md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB) " << "\n"
+      end
 
-          md << "File Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
-        end
+      diff[:file_size].tap do |file_size|
+        size = Apkstats::Helper::Bytes.from_b(file_size)
 
-        diff[:download_size].tap do |download_size|
-          size = Apkstats::Helper::Bytes.from_b(download_size)
+        md << "File Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
+      end
 
-          md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
-        end
+      diff[:download_size].tap do |download_size|
+        size = Apkstats::Helper::Bytes.from_b(download_size)
 
-        result[:base][:method_reference_count].tap do |method_reference_count|
-          md << "New Method Reference Count | #{method_reference_count}" << "\n"
-        end
+        md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
+      end
 
-        diff[:method_reference_count].tap do |method_reference_count|
-          md << "Method Reference Count Change | #{method_reference_count}" << "\n"
-        end
+      result[:base][:method_reference_count].tap do |method_reference_count|
+        md << "New Method Reference Count | #{method_reference_count}" << "\n"
+      end
 
-        result[:base][:dex_count].tap do |dex_count|
-          md << "New Number of dex file(s) | #{dex_count}" << "\n"
-        end
+      diff[:method_reference_count].tap do |method_reference_count|
+        md << "Method Reference Count Change | #{method_reference_count}" << "\n"
+      end
 
-        diff[:dex_count].tap do |dex_count|
-          md << "Number of dex file(s) Change | #{dex_count}" << "\n"
-        end
+      result[:base][:dex_count].tap do |dex_count|
+        md << "New Number of dex file(s) | #{dex_count}" << "\n"
+      end
 
-        report_hash_and_arrays = lambda { |key, name|
-          list_up_entities = lambda { |type_key, label|
-            diff[key][type_key].tap do |features|
-              break if features.empty?
+      diff[:dex_count].tap do |dex_count|
+        md << "Number of dex file(s) Change | #{dex_count}" << "\n"
+      end
 
-              md << "#{label} | " << features.map { |f| "- #{f}" }.join("<br>").to_s << "\n"
-            end
-          }
+      report_hash_and_arrays = lambda { |key, name|
+        list_up_entities = lambda { |type_key, label|
+          diff[key][type_key].tap do |features|
+            break if features.empty?
 
-          list_up_entities.call(:new, "New #{name}")
-          list_up_entities.call(:removed, "Removed #{name}")
+            md << "#{label} | " << features.map { |f| "- #{f}" }.join("<br>").to_s << "\n"
+          end
         }
 
-        report_hash_and_arrays.call(:required_features, "Required Features")
-        report_hash_and_arrays.call(:non_required_features, "Non-required Features")
-        report_hash_and_arrays.call(:permissions, "Permissions")
+        list_up_entities.call(:new, "New #{name}")
+        list_up_entities.call(:removed, "Removed #{name}")
+      }
 
-        markdown(md)
-      end
+      report_hash_and_arrays.call(:required_features, "Required Features")
+      report_hash_and_arrays.call(:non_required_features, "Non-required Features")
+      report_hash_and_arrays.call(:permissions, "Permissions")
+
+      markdown(md)
+      true
     rescue StandardError => e
       warn("apkstats failed to execute the command due to #{e.message}")
 
       on_error(e)
+      false
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
