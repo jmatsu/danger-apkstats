@@ -9,13 +9,13 @@ This allows you to get attributes of your application file (apk) and report a su
 
 `gem install danger-apkstats` or add `danger-apkstats` to your Gemfile.
 
-Please specify the path of apkanalyzer in your Dangerfile.
+Please include `apkanalyzer` in your PATH or specify the path of apkanalyzer in your Dangerfile.
 
 ```ruby
 apkstats.apkanalyzer_path='/path/to/apkanalyzer'
 ```
 
-`ANDROID_HOME` has been officially deprecated. `ANDROID_SDK_ROOT` is similar to `ANDROID_HOME` but differs actually. And also, the change indicated the possibility of further deprecations and/or breaking changes in the Android SDK structure.
+NOTE: Inferring the path of apkanalyzer by using ANDROID_HOME and/or ANDROID_SDK_ROOT will be removed since version 0.4.
 
 ## Usage
 
