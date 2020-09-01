@@ -289,17 +289,25 @@ module Danger
     def apkanalyzer_command
       return @apkanalyzer_command if defined?(@apkanalyzer_command)
 
-      command_path = apkanalyzer_path || begin
-                                           android_home = ENV["ANDROID_HOME"]
+      command_path = apkanalyzer_path || `which apkanalyzer`.chomp
 
-                                           if android_home
-                                             warn("apkstats will not use ANDROID_HOME in further versions because ANDROID_HOME has been officially deprecated.")
-                                           else
-                                             raise Error, "Please specify apkanalyzer_path to execute apkstats"
-                                           end
+      if command_path.empty?
+        sdk_path = ENV["ANDROID_HOME"] || ENV["ANDROID_SDK_ROOT"]
 
-                                           "#{android_home}/tools/bin/apkanalyzer"
-                                         end
+        if sdk_path
+          tmp_path = File.join(sdk_path, "cmdline-tools/tools/bin/apkanalyzer")
+          tmp_path = File.join(sdk_path, "tools/bin/apkanalyzer") unless File.executable?(tmp_path)
+
+          command_path = tmp_path if File.executable?(tmp_path)
+        else
+          warn("apkstats will not infer the apkanalyzer path in further versions so please include apkanalyer in your PATH or specify it explicitly.")
+        end
+      end
+
+      command_path = command_path.chomp
+
+      raise Error, "Please include apkanalyer in your PATH or specify it explicitly." if command_path.empty?
+      raise Error, "#{command_path} is not executable." unless File.executable?(command_path)
 
       @apkanalyzer_command = Apkstats::Command::ApkAnalyzer.new(command_path: command_path)
     end
