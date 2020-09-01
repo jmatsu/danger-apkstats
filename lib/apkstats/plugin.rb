@@ -292,7 +292,7 @@ module Danger
       command_path = apkanalyzer_path || `which apkanalyzer`.chomp
 
       if command_path.empty?
-        sdk_path = ENV["ANDROID_HOME"] || ENV['ANDROID_SDK_ROOT']
+        sdk_path = ENV["ANDROID_HOME"] || ENV["ANDROID_SDK_ROOT"]
 
         if sdk_path
           tmp_path = File.join(sdk_path, "cmdline-tools/tools/bin/apkanalyzer")
