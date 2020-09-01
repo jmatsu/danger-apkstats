@@ -307,6 +307,7 @@ module Danger
       command_path = command_path.chomp
 
       raise Error, "Please include apkanalyer in your PATH or specify it explicitly." if command_path.empty?
+      raise Error, "#{command_path} is not executable." unless File.executable?(command_path)
 
       @apkanalyzer_command = Apkstats::Command::ApkAnalyzer.new(command_path: command_path)
     end
