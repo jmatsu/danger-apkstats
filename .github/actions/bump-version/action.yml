@@ -1,0 +1,20 @@
+name: 'Bump version'
+description: 'Do some tasks to bump the version'
+inputs:
+  new-version:
+    description: 'The new version to release'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/actions/setup-ruby
+    - run: ruby -e 'Gem::Version.new(ARGV.shift)' '${{ inputs.new-version }}'
+      shell: bash
+    - run: ruby {{ github.action_path }}/eval-erb-templates.rb '${{ github.workspace }}' '${{ inputs.new-version }}'
+      shell: bash
+      env:
+        DRY_RUN: 'false'
+    - run: bundle exec rake rubocop
+      shell: bash
+    - run: bundle exec rake 'check_release[${{ inputs.new-version }}]'
+      shell: bash
