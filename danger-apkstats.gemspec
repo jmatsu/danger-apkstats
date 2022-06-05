@@ -47,5 +47,5 @@ Gem::Specification.new do |spec|
   # This will stop test execution and let you inspect the results
   spec.add_development_dependency "pry"
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 2.6.0"
 end
