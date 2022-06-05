@@ -25,7 +25,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
-          bundle-cache: true
+          bundler-cache: true
       - run: bundle exec rake rspecs spec_docs
         env:
           APKANALYZER_PATH: ${{ env.ANDROID_HOME }}/cmdline-tools/latest/bin/apkanalyzer
