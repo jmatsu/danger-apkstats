@@ -73,10 +73,10 @@ module Apkstats::Entity
     end
 
     it "read values of a command" do
-      base_apk_info = ApkInfo.new(base_command, "apk filepath")
-      other_apk_info = ApkInfo.new(other_command, "apk filepath")
+      base_apk_info = ApkInfo.new(command: base_command, apk_filepath: "apk filepath")
+      other_apk_info = ApkInfo.new(command: other_command, apk_filepath: "apk filepath")
 
-      diff = ApkInfoDiff.new(base_apk_info, other_apk_info)
+      diff = ApkInfoDiff.new(base: base_apk_info, other: other_apk_info)
 
       expect(diff.file_size).to eq(-500)
       expect(diff.download_size).to eq(100)

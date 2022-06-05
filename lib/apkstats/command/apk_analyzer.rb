@@ -4,8 +4,9 @@ module Apkstats::Command
   class ApkAnalyzer
     include Apkstats::Command::Executable
 
-    def initialize(opts)
-      @command_path = opts.fetch(:command_path)
+    # @param command_path [String, Pathname] a path to apkanalyzer
+    def initialize(command_path:)
+      @command_path = command_path.to_s
     end
 
     def file_size(apk_filepath)
@@ -80,7 +81,7 @@ module Apkstats::Command
     private
 
     def run_command(*args)
-      out, err, status = Open3.capture3(command_path, *args)
+      out, err, status = Open3.capture3(command_path, *args.map(&:to_s))
       raise err unless status.success?
 
       out.rstrip

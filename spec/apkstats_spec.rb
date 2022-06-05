@@ -36,6 +36,15 @@ module Danger
 
           it { expect(apkstats.compare_with(apk_other1, do_report: true)).to be_truthy }
         end
+
+        context "pathname was given" do
+          before do
+            apkstats.apk_filepath = Pathname.new(apk_base)
+            apkstats.apkanalyzer_path = Pathname.new(apkanalyzer_path)
+          end
+
+          it { expect(apkstats.compare_with(Pathname.new(apk_other1), do_report: true)).to be_truthy }
+        end
       end
     end
   end
