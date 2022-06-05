@@ -80,42 +80,53 @@ module Danger
     attr_accessor :command_type
 
     # *Required*
-    # A path of apkanalyzer command
     #
-    # @return [String] _
-    attr_accessor :apkanalyzer_path
+    # @param value [String, Pathname] A path of apkanalyzer command
+    def apkanalyzer_path=(value)
+      @apkanalyzer_path = value.to_s
+    end
+
+    # @return [String, NilClass] A path of apkanalyzer command
+    def apkanalyzer_path
+      @apkanalyzer_path
+    end
 
     # @deprecated Use apkanalyzer_path instead
     # @return [String] _
     alias command_path apkanalyzer_path
 
     # @deprecated Use apkanalyzer_path= instead
-    # @return [String] _
+    # @return [String, Pathname] _
     alias command_path= apkanalyzer_path=
 
     # *Required*
-    # Your target apk filepath.
-    #
-    # @return [String]
-    attr_accessor :apk_filepath
+    # @param value [String, Pathname] Your base apk filepath.
+    def apk_filepath=(value)
+      @apk_filepath = value.to_s
+    end
+
+    # @return [String, NilClass] Your base apk filepath.
+    def apk_filepath
+      @apk_filepath
+    end
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 
     # Get stats of two apk files and calculate diffs between them.
     #
-    # @param [String] other_apk_filepath your old apk
+    # @param [String, Pathname] other_apk_filepath your old apk
     # @param [Boolean] do_report report markdown table if true, otherwise just return results
     # @return [Hash] see command/executable#compare_with for more detail
     def compare_with(other_apk_filepath, do_report: true)
       raise "apk filepaths must be specified" if apk_filepath.nil? || apk_filepath.empty?
 
-      base_apk = Apkstats::Entity::ApkInfo.new(apkanalyzer_command, apk_filepath)
-      other_apk = Apkstats::Entity::ApkInfo.new(apkanalyzer_command, other_apk_filepath)
+      base_apk = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath)
+      other_apk = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
 
       result = {
           base: base_apk.to_h,
           other: base_apk.to_h,
-          diff: Apkstats::Entity::ApkInfoDiff.new(base_apk, other_apk).to_h,
+          diff: Apkstats::Entity::ApkInfoDiff.new(base: base_apk, other: other_apk).to_h,
       }
 
       return result unless do_report
@@ -304,7 +315,7 @@ module Danger
         end
       end
 
-      command_path = command_path.chomp
+      command_path = command_path.to_s.chomp
 
       raise Error, "Please include apkanalyer in your PATH or specify it explicitly." if command_path.empty?
       raise Error, "#{command_path} is not executable." unless File.executable?(command_path)

@@ -34,7 +34,7 @@ module Apkstats::Entity
     end
 
     it "read values of a command" do
-      apk_info = ApkInfo.new(command, "apk filepath")
+      apk_info = ApkInfo.new(command: command, apk_filepath: "apk filepath")
 
       ApkInfo::KEYS.each do |key|
         expect(apk_info.send(key)).to eq(command_values[key])
@@ -43,7 +43,7 @@ module Apkstats::Entity
     end
 
     it "to_h" do
-      apk_info = ApkInfo.new(command, "apk filepath")
+      apk_info = ApkInfo.new(command: command, apk_filepath: "apk filepath")
 
       expect(apk_info.to_h).to include(command_values)
     end

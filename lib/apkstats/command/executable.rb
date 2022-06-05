@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 module Apkstats::Command
+
+  # @!attribute [r] command_path
+  #   @return [String] a path to a command
   module Executable
     require "open3"
 
     attr_reader :command_path
 
+    # @return [Boolean] returns true if the command_path is executable, otherwise false.
     def executable?
       File.executable?(command_path)
     end
@@ -59,10 +63,10 @@ module Apkstats::Command
     #
     # @return [Hash]
     def compare_with(apk_filepath, other_apk_filepath)
-      base = Apkstats::Entity::ApkInfo.new(self, apk_filepath)
-      other = Apkstats::Entity::ApkInfo.new(self, other_apk_filepath)
+      base = Apkstats::Entity::ApkInfo.new(command: self, apk_filepath: apk_filepath)
+      other = Apkstats::Entity::ApkInfo.new(command: self, apk_filepath: other_apk_filepath)
 
-      Apkstats::Entity::ApkInfoDiff.new(base, other).to_h
+      Apkstats::Entity::ApkInfoDiff.new(base: base, other: other).to_h
     end
   end
 end

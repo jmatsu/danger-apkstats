@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 module Apkstats::Entity
+  # @!attribute [r] base
+  #   @return [ApkInfo] the base apk (older)
+  # @!attribute [r] other
+  #   @return [ApkInfo] another apk to compare (newer)
   class ApkInfoDiff
     KEYS = Apkstats::Entity::ApkInfo::KEYS
 
-    # ApkInfo
     attr_reader :base, :other
 
-    private(:base, :other)
-
-    def initialize(base, other)
+    def initialize(base:, other:)
       @base = base
       @other = other
     end
