@@ -82,6 +82,7 @@ module Danger
     # *Required*
     #
     # @param value [String, Pathname] A path of apkanalyzer command
+    # @return [String]
     def apkanalyzer_path=(value)
       @apkanalyzer_path = value.to_s
     end
@@ -89,16 +90,22 @@ module Danger
     # @return [String, NilClass] A path of apkanalyzer command
     attr_reader :apkanalyzer_path
 
-    # @deprecated Use apkanalyzer_path instead
+    # Use apkanalyzer_path instead
+    #
+    # @deprecated
+    # @param value [String, Pathname] A path of apkanalyzer command
     # @return [String] _
     alias command_path apkanalyzer_path
 
-    # @deprecated Use apkanalyzer_path= instead
+    # Use apkanalyzer_path= instead
+    #
+    # @deprecated
     # @return [String, Pathname] _
     alias command_path= apkanalyzer_path=
 
     # *Required*
     # @param value [String, Pathname] Your base apk filepath.
+    # @return [String]
     def apk_filepath=(value)
       @apk_filepath = value.to_s
     end
