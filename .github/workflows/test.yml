@@ -27,5 +27,5 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - run: >
-          APKANALYZER_PATH=${{ env.ANDROID_HOME }}/cmdline-tools/latest/bin/apkanalyzer
+          APKANALYZER_PATH=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/apkanalyzer
           bundle exec rake specs spec_docs
