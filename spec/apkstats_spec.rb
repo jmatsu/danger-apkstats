@@ -13,13 +13,13 @@ module Danger
       let(:apkstats) { dangerfile.apkstats }
 
       before do
-        json = File.read(fixture_path + "github_pr.json")
+        json = File.read(fixture_path.join("github_pr.json"))
         allow(apkstats.github).to receive(:pr_json).and_return(json)
       end
 
       describe "#compare_with" do
-        let(:apk_base) { fixture_path + "app-base.apk" }
-        let(:apk_other1) { fixture_path + "app-other1.apk" }
+        let(:apk_base) { fixture_path.join("app-base.apk").to_s }
+        let(:apk_other1) { fixture_path.join("app-other1.apk").to_s }
 
         before do
           apkstats.apkanalyzer_path = apkanalyzer_path

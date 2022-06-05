@@ -66,7 +66,7 @@ module Apkstats::Entity
     end
 
     def -(other)
-      raise "#{self.class} cannot handle #{other.class} with the minus operator" unless other.class == Features
+      raise "#{self.class} cannot handle #{other.class} with the minus operator" unless other.instance_of?(Features)
 
       self_hash = Features.hashnize(self)
       other_hash = Features.hashnize(other)

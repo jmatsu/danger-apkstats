@@ -2,7 +2,7 @@
 
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "apkstats/gem_version.rb"
+require "apkstats/gem_version"
 
 Gem::Specification.new do |spec|
   spec.name          = "danger-apkstats"
@@ -46,4 +46,6 @@ Gem::Specification.new do |spec|
   #
   # This will stop test execution and let you inspect the results
   spec.add_development_dependency "pry"
+
+  spec.required_ruby_version = ">= 2.7"
 end

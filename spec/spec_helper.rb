@@ -2,11 +2,12 @@
 
 require "pathname"
 ROOT = Pathname.new(File.expand_path("..", __dir__))
-$:.unshift((ROOT + "lib").to_s)
-$:.unshift((ROOT + "spec").to_s)
+$:.unshift(ROOT.join("lib"))
+$:.unshift(ROOT.join("spec"))
 
+# @return [Pathname]
 def fixture_path
-  "#{(ROOT + 'fixture')}/"
+  ROOT.join("fixture")
 end
 
 require "bundler/setup"
