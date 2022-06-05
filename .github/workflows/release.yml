@@ -1,0 +1,54 @@
+name: 'Publish a new release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      new-version:
+        required: true
+        description: 'a new version to release'
+
+  release:
+    types:
+      - published
+
+jobs:
+  bump:
+    if: >
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bump-version
+        with:
+          new-version: ${{ github.event.inputs.new-version }}
+      - run: bundle install
+      - run: bundle exec rake specs spec_docs
+      - run: |
+          git config --local user.email jmatsu.drm+github-actions@gmail.com
+          git config --local user.name github-actions
+
+          git add .
+          git commit -m "bump: Bump up to ${{ github.event.inputs.new-version }} through GitHub Actions"
+      - run: >
+          gh
+          pr
+          create 
+          --base master
+          --title 'Bump up to ${{ github.event.inputs.new-version }}'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-gem:
+    if: >
+      github.event_name == 'release' &&
+      !github.event.release.draft
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-ruby
+      - run: bundle install
+      - run: bundle exec rake 'check_release[${{ github.event.release.tag_name }}]'
+      - run: bundle exec rake specs spec_docs
+      - run: bundle exec rake release
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_ORG_API_KEY }}

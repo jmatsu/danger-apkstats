@@ -23,3 +23,11 @@ desc "Ensure that the plugin passes `danger plugins lint`"
 task :spec_docs do
   sh "bundle exec danger plugins lint"
 end
+
+desc "Check the precoditions of the release flow"
+task :check_release, [:version] do |_, args|
+  new_version = args.version&.gsub(/\Av/, '') or raise 'version argument is required'
+
+  require_relative 'lib/apkstats/gem_version'
+  raise "Ver. #{Apkstats::VERSION} is defined but #{new_version} has been requested." unless Apkstats::VERSION == new_version
+end
