@@ -4,13 +4,13 @@ require_relative "../spec_helper"
 
 module Apkstats::Command
   describe Apkstats::Command::ApkAnalyzer do
-    let(:apk_base) { fixture_path + "app-base.apk" }
-    let(:apk_other1) { fixture_path + "app-other1.apk" }
-    let(:apk_other2) { fixture_path + "app-other2.apk" }
-    let(:apk_other3) { fixture_path + "app-other3.apk" }
-    let(:apk_other4) { fixture_path + "app-other4.apk" }
-    let(:apk_other5) { fixture_path + "app-other5.apk" }
-    let(:apk_method64k) { fixture_path + "app-method64k.apk" }
+    let(:apk_base) { fixture_path.join("app-base.apk").to_s }
+    let(:apk_other1) { fixture_path.join("app-other1.apk").to_s }
+    let(:apk_other2) { fixture_path.join("app-other2.apk").to_s }
+    let(:apk_other3) { fixture_path.join("app-other3.apk").to_s }
+    let(:apk_other4) { fixture_path.join("app-other4.apk").to_s }
+    let(:apk_other5) { fixture_path.join("app-other5.apk").to_s }
+    let(:apk_method64k) { fixture_path.join("app-method64k.apk").to_s }
 
     it "should use command_path" do
       expect(ApkAnalyzer.new(command_path: "/y/z").command_path).to eq("/y/z")
