@@ -87,3 +87,8 @@ This binary would throw `java.lang.NoClassDefFoundError: javax/xml/bind/annotati
 #### If you are using Java 9 or later
 
 `$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer` is compatible.
+
+## Release
+
+- Run .github/workflows/release.yml's bump job and merge the created PR
+- Create a GitHub release with the new version tag
