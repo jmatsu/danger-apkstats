@@ -22,7 +22,7 @@ module Danger
         let(:apk_other1) { fixture_path + "app-other1.apk" }
 
         before do
-          apkstats.apkanalyzer_path = `which apkanalyzer`.chomp
+          apkstats.apkanalyzer_path = apkanalyzer_path
         end
 
         context "unless apk_filepath is specified" do

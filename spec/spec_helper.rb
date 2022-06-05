@@ -70,4 +70,8 @@ def testing_dangerfile
   Danger::Dangerfile.new(env, testing_ui)
 end
 
+def apkanalyzer_path
+  ENV.fetch("APKANALYZER_PATH")
+end
+
 require_relative "stub/command"
