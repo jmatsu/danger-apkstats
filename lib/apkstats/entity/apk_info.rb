@@ -26,7 +26,7 @@ module Apkstats::Entity
     # @param command [Apkstats::Command::Executable] a command to execute
     # @param apk_filepath [String, Pathname] a path to a apk file
     def initialize(command:, apk_filepath:)
-      apk_filepath = apk_filepath
+      apk_filepath = apk_filepath.kind_of?(Pathname) ? apk_filepath.to_s : apk_filepath
 
       KEYS.each do |key|
         self.send("#{key}=", command.send(key, apk_filepath))

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Apkstats::Command
-
   # @!attribute [r] command_path
   #   @return [String] a path to a command
   module Executable

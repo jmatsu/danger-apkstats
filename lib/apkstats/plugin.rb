@@ -87,9 +87,7 @@ module Danger
     end
 
     # @return [String, NilClass] A path of apkanalyzer command
-    def apkanalyzer_path
-      @apkanalyzer_path
-    end
+    attr_reader :apkanalyzer_path
 
     # @deprecated Use apkanalyzer_path instead
     # @return [String] _
@@ -106,9 +104,7 @@ module Danger
     end
 
     # @return [String, NilClass] Your base apk filepath.
-    def apk_filepath
-      @apk_filepath
-    end
+    attr_reader :apk_filepath
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 
