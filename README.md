@@ -73,3 +73,17 @@ Number of dex file(s) Change | 1
 Support only versions which are in normal and/or security maintenance.
 
 ref: https://www.ruby-lang.org/en/downloads/branches/
+
+### Supported JDK versions
+
+Depends on `apkanalyzer`. Please read the official document and set up your environment. The following sections might be your help.
+
+#### If your are using less than Java 9
+
+`$ANDROID_HOME/tools/bin/apkanalyzer` is compatible with your environment. 
+
+This binary would throw `java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlSchema` when running on Java 9 or later.
+
+#### If you are using Java 9 or later
+
+`$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer` is compatible.
