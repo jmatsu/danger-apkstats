@@ -26,7 +26,7 @@ module Danger
         end
 
         context "unless apk_filepath is specified" do
-          it { expect(apkstats.compare_with(apk_other1, do_report: true)).to be_falsey }
+          it { expect { apkstats.compare_with(apk_other1, do_report: true) }.to raise_error(Danger::DangerApkstats::MisconfigurationError) }
         end
 
         context "otherwise" do

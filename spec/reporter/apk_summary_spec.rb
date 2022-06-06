@@ -9,12 +9,12 @@ describe Apkstats::Reporter::ApkSummary do
   let(:apk_base_filepath) { fixture_path.join("app-base.apk") }
   let(:apk_other1_filepath) { fixture_path.join("app-other1.apk") }
 
-  describe '#generate_markdown' do
-    subject {
+  describe "#generate_markdown" do
+    subject do
       Apkstats::Reporter::ApkSummary.new(
-        apk_info: apk_info,
+        apk_info: apk_info
       ).generate_markdown
-    }
+    end
 
     let(:apk_filepath) { apk_base_filepath }
 

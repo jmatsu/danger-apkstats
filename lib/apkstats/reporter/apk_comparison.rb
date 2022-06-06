@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 
 module Apkstats::Reporter
-
   # @!attribute [r] base_apk_info
   #   @return [Apkstats::Entity::ApkInfo]
   # @!attribute [r] other_apk_info
@@ -8,7 +8,6 @@ module Apkstats::Reporter
   # @!attribute [r] diff_apk_info
   #   @return [Apkstats::Entity::ApkInfoDiff]
   class ApkComparison
-
     attr_reader :base_apk_info, :other_apk_info, :diff_apk_info
 
     # @param base_apk_info [Apkstats::Entity::ApkInfo] an apk info
@@ -18,6 +17,8 @@ module Apkstats::Reporter
       @other_apk_info = other_apk_info
       @diff_apk_info = Apkstats::Entity::ApkInfoDiff.new(base: base_apk_info, other: other_apk_info)
     end
+
+    # rubocop:disable Metrics/AbcSize
 
     # @return [String] markdown text
     def generate_markdown
@@ -72,6 +73,8 @@ module Apkstats::Reporter
       lines.flatten.join("\n") << "\n" # \n is required for the backward compatibility
     end
 
+    # rubocop:enable Metrics/AbcSize
+
     def min_sdk_change(before_value:, after_value:)
       return [] if before_value.nil? || after_value.nil?
 
@@ -124,7 +127,7 @@ module Apkstats::Reporter
     def itemize_with_label(label:, items:)
       return [] if items.empty?
 
-      "#{label} | #{items.map { |item| "- #{item}" }.join("<br>")}"
+      "#{label} | #{items.map { |item| "- #{item}" }.join('<br>')}"
     end
   end
 end

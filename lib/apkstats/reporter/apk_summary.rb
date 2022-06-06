@@ -1,5 +1,6 @@
-module Apkstats::Reporter
+# frozen_string_literal: true
 
+module Apkstats::Reporter
   # @!attribute [r] apk_info
   #   @return [Apkstats::Entity::ApkInfo]
   class ApkSummary
@@ -13,7 +14,7 @@ module Apkstats::Reporter
       target_sdk: "Target Sdk",
       method_reference_count: "Method Reference Count",
       dex_count: "Dex File Count"
-    }
+    }.freeze
 
     attr_reader :apk_info
 

@@ -68,6 +68,7 @@ module Danger
   #
   class DangerApkstats < Plugin
     class Error < StandardError; end
+    class MisconfigurationError < Error; end
 
     # @deprecated this field have no effect
     COMMAND_TYPE_MAP = {
@@ -115,8 +116,6 @@ module Danger
     # @return [String, NilClass] Your base apk filepath.
     attr_reader :apk_filepath
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-
     # Get stats of two apk files and calculate diffs between them.
     #
     # @param [String, Pathname] other_apk_filepath your old apk
@@ -162,7 +161,7 @@ module Danger
     def calculate_diff(other_apk_filepath:)
       ensure_apk_filepath!
 
-      base_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath),
+      base_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath)
       other_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
       diff_apk_info = Apkstats::Entity::ApkInfoDiff.new(base: base_apk_info, other: other_apk_info)
 
@@ -172,8 +171,6 @@ module Danger
         diff: diff_apk_info.to_h
       }
     end
-
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     # Show the file size of your apk file.
     #
@@ -296,7 +293,7 @@ module Danger
     end
 
     def ensure_apk_filepath!
-      raise "apk apk_filepath must be specified" if apk_filepath.nil? || !File.file?(apk_filepath)
+      raise MisconfigurationError, "apk_filepath must be specified" if apk_filepath.nil? || !File.file?(apk_filepath)
     end
 
     def process
