@@ -96,7 +96,6 @@ module Danger
     # Use apkanalyzer_path instead
     #
     # @deprecated
-    # @param value [String, Pathname] A path of apkanalyzer command
     # @return [String] _
     alias command_path apkanalyzer_path
 
@@ -121,31 +120,57 @@ module Danger
     # Get stats of two apk files and calculate diffs between them.
     #
     # @param [String, Pathname] other_apk_filepath your old apk
-    # @param [Boolean] do_report report markdown table if true, otherwise just return results
-    # @return [Hash] see command/executable#compare_with for more detail
+    # @param [Boolean] do_report Deprecated. report markdown table if true, otherwise just return results.
+    # @return [Hash] Deprecated. If you would like to get the comparison results in Hash, then please use calculate_diff instead.
     def compare_with(other_apk_filepath, do_report: true)
-      raise "apk filepaths must be specified" if apk_filepath.nil? || apk_filepath.empty?
+      ensure_apk_filepath!
 
-      reporter = Apkstats::Reporter::ApkComparison.new(
-        base_apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath),
-        other_apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
-      )
+      process do
+        if do_report
+          reporter = Apkstats::Reporter::ApkComparison.new(
+            base_apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath),
+            other_apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
+          )
 
-      if do_report
-        markdown(reporter.generate_markdown)
-        true
-      else
-        {
-          base: reporter.base_apk_info.to_h,
-          other: reporter.other_apk_info.to_h,
-          diff: reporter.diff_apk_info.to_h
-        }
+          markdown(reporter.generate_markdown)
+          true
+        else
+          calculate_diff(other_apk_filepath: other_apk_filepath)
+        end
       end
-    rescue StandardError => e
-      warn("apkstats failed to execute the command due to #{e.message}")
+    end
 
-      on_error(e)
-      false
+    # Report the summary of the single apk.
+    #
+    # @return [void]
+    def summary
+      ensure_apk_filepath!
+
+      process do
+        reporter = Apkstats::Reporter::ApkSummary.new(
+          apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath)
+        )
+
+        markdown(reporter.generate_markdown)
+      end
+    end
+
+    # Calculate the differences of apk_filepath and the given apk file and returns them.
+    #
+    # @param other_apk_filepath [String, Pathname] an apk file path to be compared.
+    # @return [Hash] a Hash contains the differences
+    def calculate_diff(other_apk_filepath:)
+      ensure_apk_filepath!
+
+      base_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath),
+      other_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
+      diff_apk_info = Apkstats::Entity::ApkInfoDiff.new(base: base_apk_info, other: other_apk_info)
+
+      {
+        base: base_apk_info.to_h,
+        other: other_apk_info.to_h,
+        diff: diff_apk_info.to_h
+      }
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -268,6 +293,19 @@ module Danger
       warn err.message
       err.backtrace&.each { |line| warn line }
       nil
+    end
+
+    def ensure_apk_filepath!
+      raise "apk apk_filepath must be specified" if apk_filepath.nil? || !File.file?(apk_filepath)
+    end
+
+    def process
+      yield
+    rescue StandardError => e
+      warn("apkstats failed to execute the command due to #{e.message}")
+
+      on_error(e)
+      false
     end
   end
 end
