@@ -12,6 +12,7 @@ require_relative "command/executable"
 require_relative "command/apk_analyzer"
 
 require_relative "reporter/apk_comparison"
+require_relative "reporter/apk_summary"
 
 module Danger
   # Show stats of your apk file.
