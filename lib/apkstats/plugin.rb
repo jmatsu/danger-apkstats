@@ -11,6 +11,9 @@ require_relative "entity/permission"
 require_relative "command/executable"
 require_relative "command/apk_analyzer"
 
+require_relative "reporter/apk_comparison"
+require_relative "reporter/apk_summary"
+
 module Danger
   # Show stats of your apk file.
   # By default, it's done using apkanalyzer in android sdk.
@@ -65,6 +68,7 @@ module Danger
   #
   class DangerApkstats < Plugin
     class Error < StandardError; end
+    class MisconfigurationError < Error; end
 
     # @deprecated this field have no effect
     COMMAND_TYPE_MAP = {
@@ -93,7 +97,6 @@ module Danger
     # Use apkanalyzer_path instead
     #
     # @deprecated
-    # @param value [String, Pathname] A path of apkanalyzer command
     # @return [String] _
     alias command_path apkanalyzer_path
 
@@ -113,106 +116,61 @@ module Danger
     # @return [String, NilClass] Your base apk filepath.
     attr_reader :apk_filepath
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-
     # Get stats of two apk files and calculate diffs between them.
     #
     # @param [String, Pathname] other_apk_filepath your old apk
-    # @param [Boolean] do_report report markdown table if true, otherwise just return results
-    # @return [Hash] see command/executable#compare_with for more detail
+    # @param [Boolean] do_report Deprecated. report markdown table if true, otherwise just return results.
+    # @return [Hash] Deprecated. If you would like to get the comparison results in Hash, then please use calculate_diff instead.
     def compare_with(other_apk_filepath, do_report: true)
-      raise "apk filepaths must be specified" if apk_filepath.nil? || apk_filepath.empty?
+      ensure_apk_filepath!
 
-      base_apk = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath)
-      other_apk = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
+      process do
+        if do_report
+          reporter = Apkstats::Reporter::ApkComparison.new(
+            base_apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath),
+            other_apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
+          )
 
-      result = {
-          base: base_apk.to_h,
-          other: base_apk.to_h,
-          diff: Apkstats::Entity::ApkInfoDiff.new(base: base_apk, other: other_apk).to_h,
-      }
-
-      return result unless do_report
-
-      diff = result[:diff]
-
-      md = +"### Apk comparison results" << "\n\n"
-      md << "Property | Summary" << "\n"
-      md << ":--- | :---" << "\n"
-
-      diff[:min_sdk].tap do |min_sdk|
-        break if min_sdk.size == 1
-
-        md << "Min SDK Change | Before #{min_sdk[1]} / After #{min_sdk[0]}" << "\n"
+          markdown(reporter.generate_markdown)
+          true
+        else
+          calculate_diff(other_apk_filepath: other_apk_filepath)
+        end
       end
-
-      diff[:target_sdk].tap do |target_sdk|
-        break if target_sdk.size == 1
-
-        md << "Target SDK Change | Before #{target_sdk[1]} / After #{target_sdk[0]}" << "\n"
-      end
-
-      result[:base][:file_size].tap do |file_size|
-        size = Apkstats::Helper::Bytes.from_b(file_size)
-
-        md << "New File Size | #{size.to_b} Bytes. (#{size.to_mb} MB) " << "\n"
-      end
-
-      diff[:file_size].tap do |file_size|
-        size = Apkstats::Helper::Bytes.from_b(file_size)
-
-        md << "File Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
-      end
-
-      diff[:download_size].tap do |download_size|
-        size = Apkstats::Helper::Bytes.from_b(download_size)
-
-        md << "Download Size Change | #{size.to_s_b} Bytes. (#{size.to_s_kb} KB) " << "\n"
-      end
-
-      result[:base][:method_reference_count].tap do |method_reference_count|
-        md << "New Method Reference Count | #{method_reference_count}" << "\n"
-      end
-
-      diff[:method_reference_count].tap do |method_reference_count|
-        md << "Method Reference Count Change | #{method_reference_count}" << "\n"
-      end
-
-      result[:base][:dex_count].tap do |dex_count|
-        md << "New Number of dex file(s) | #{dex_count}" << "\n"
-      end
-
-      diff[:dex_count].tap do |dex_count|
-        md << "Number of dex file(s) Change | #{dex_count}" << "\n"
-      end
-
-      report_hash_and_arrays = lambda { |key, name|
-        list_up_entities = lambda { |type_key, label|
-          diff[key][type_key].tap do |features|
-            break if features.empty?
-
-            md << "#{label} | " << features.map { |f| "- #{f}" }.join("<br>").to_s << "\n"
-          end
-        }
-
-        list_up_entities.call(:new, "New #{name}")
-        list_up_entities.call(:removed, "Removed #{name}")
-      }
-
-      report_hash_and_arrays.call(:required_features, "Required Features")
-      report_hash_and_arrays.call(:non_required_features, "Non-required Features")
-      report_hash_and_arrays.call(:permissions, "Permissions")
-
-      markdown(md)
-      true
-    rescue StandardError => e
-      warn("apkstats failed to execute the command due to #{e.message}")
-
-      on_error(e)
-      false
     end
 
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+    # Report the summary of the single apk.
+    #
+    # @return [void]
+    def summary
+      ensure_apk_filepath!
+
+      process do
+        reporter = Apkstats::Reporter::ApkSummary.new(
+          apk_info: Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath)
+        )
+
+        markdown(reporter.generate_markdown)
+      end
+    end
+
+    # Calculate the differences of apk_filepath and the given apk file and returns them.
+    #
+    # @param other_apk_filepath [String, Pathname] an apk file path to be compared.
+    # @return [Hash] a Hash contains the differences
+    def calculate_diff(other_apk_filepath:)
+      ensure_apk_filepath!
+
+      base_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: apk_filepath)
+      other_apk_info = Apkstats::Entity::ApkInfo.new(command: apkanalyzer_command, apk_filepath: other_apk_filepath)
+      diff_apk_info = Apkstats::Entity::ApkInfoDiff.new(base: base_apk_info, other: other_apk_info)
+
+      {
+        base: base_apk_info.to_h,
+        other: other_apk_info.to_h,
+        diff: diff_apk_info.to_h
+      }
+    end
 
     # Show the file size of your apk file.
     #
@@ -332,6 +290,19 @@ module Danger
       warn err.message
       err.backtrace&.each { |line| warn line }
       nil
+    end
+
+    def ensure_apk_filepath!
+      raise MisconfigurationError, "apk_filepath must be specified" if apk_filepath.nil? || !File.file?(apk_filepath)
+    end
+
+    def process
+      yield
+    rescue StandardError => e
+      warn("apkstats failed to execute the command due to #{e.message}")
+
+      on_error(e)
+      false
     end
   end
 end
